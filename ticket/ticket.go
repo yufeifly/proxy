@@ -39,8 +39,8 @@ func (t *Ticket) SetTicket(v int) {
 	t.rw.Unlock()
 }
 
-//func (t *Ticket) UnSet() {
-//	t.rw.Lock()
-//	t.token = false
-//	t.rw.Unlock()
-//}
+func (t *Ticket) UnSet() {
+	t.rw.Lock()
+	t.token = 0
+	t.rw.Unlock()
+}

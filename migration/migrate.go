@@ -5,6 +5,7 @@ import (
 	"github.com/yufeifly/proxy/client"
 	"github.com/yufeifly/proxy/model"
 	"github.com/yufeifly/proxy/ticket"
+	"github.com/yufeifly/proxy/wal"
 	"time"
 )
 
@@ -13,11 +14,8 @@ func TrySendMigrate(opts model.MigrateReqOpts) error {
 
 	// select a dst node, and open connection to dst
 
-	// set global lock
-	ticket.T.SetTicket(ticket.Logging)
 	logrus.Warn("ticket set logging")
-
-	// write log files to dst
+	ticket.T.SetTicket(ticket.Logging)
 
 	// send migrate request to src node
 	cli := client.Client{}
@@ -26,24 +24,47 @@ func TrySendMigrate(opts model.MigrateReqOpts) error {
 		return err
 	}
 
-	time.Sleep(60 * time.Second)
-
+	// write log files to dst
 	// when dst starts, open redis connection
-
 	//  dst consume logs in the meantime
-
 	// wait until all log files consumed(no whole log file)
+	tick := time.Tick(200 * time.Millisecond)
+	for {
+		<-tick
+		sent := wal.LockAndGetTotalSend()
+		consumed := wal.LockAndGetTotal()
+		if sent == 0 {
+			continue
+		}
+		if sent-consumed < 1 {
+			logrus.Warn("downtime start")
+			ticket.T.SetTicket(ticket.ShutWrite)
+			wal.UnlockConsumer()
+			wal.UnlockLogger()
+			break
+		}
+		wal.UnlockConsumer()
+		wal.UnlockLogger()
+	}
 
-	// downtime start
+	// log, send leftover
+	wal.SendLogEntry()
 
-	// send last log file to dst to let it consume
+	// wait until the last log consumed by dst
+	for {
+		<-tick
+		sent := wal.LockAndGetTotalSend()
+		consumed := wal.LockAndGetTotal()
+		if sent == consumed {
+			// switch, requests redirect to dst node
 
-	// dst no log file
+			break
+		}
+	}
 
-	// switch, requests redirect to dst node
-
-	// downtime end
-	// unset global lock
+	// downtime end, unset global lock
 	logrus.Warn("ticket unset")
+	ticket.T.UnSet()
+
 	return nil
 }

@@ -23,7 +23,7 @@ func (cli *Client) SendMigrate(opts model.MigrateReqOpts) error {
 		JSON: moptsJson,
 	}
 
-	url := ""
+	url := "http://127.0.0.1:6789/container/migrate"
 	_, err = grequests.Post(url, ro)
 	if err != nil {
 		return err
