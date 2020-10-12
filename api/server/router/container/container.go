@@ -7,14 +7,14 @@ import (
 
 func InitRoutes(r *gin.Engine) {
 	r.POST("/container/run", handlers.Run)
-	//  start a container
+	// start a container
 	r.POST("/container/start", handlers.Start)
 	//  list containers
 	r.GET("/container/list", handlers.List)
 	//  stop a container
-	r.POST("/container/stop", handlers.Stop)
+	//r.POST("/container/stop", handlers.Stop)
 	//  create a container
-	r.POST("/container/create", handlers.Create)
+	//r.POST("/container/create", handlers.Create)
 	//  create a container checkpoint
 	//r.POST("/container/checkpoint/create", handlers.CheckpointCreate)
 	// receive checkpoint and restore from it

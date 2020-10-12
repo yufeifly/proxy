@@ -9,27 +9,23 @@ import (
 // Get redis get
 func Get(c *gin.Context) {
 	header := "redis.Get"
-	key := c.Request.URL.Query().Get("key")
+	key := c.Query("key")
 
 	val, err := redis.Get(key)
 	if err != nil {
 		logrus.Errorf("%s, err: %v", header, err)
 		logrus.Panic(err)
 	}
-	c.JSON(200, gin.H{
-		"value: ": val,
-	})
+	c.JSON(200, gin.H{"value: ": val})
 }
 
 // Set redis set
 func Set(c *gin.Context) {
+
 	key := c.Query("key")
 	val := c.Query("value")
 
-	//logrus.WithFields(logrus.Fields{
-	//	"key":   key,
-	//	"value": val,
-	//}).Warn("about to set pair")
+	// todo validate kv pair
 
 	err := redis.Set(key, val)
 	if err != nil {
@@ -40,7 +36,5 @@ func Set(c *gin.Context) {
 		logrus.Panic(err)
 	}
 
-	c.JSON(200, gin.H{
-		"result": "success",
-	})
+	c.JSON(200, gin.H{"result": "success"})
 }

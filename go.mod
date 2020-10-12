@@ -10,6 +10,7 @@ require (
 	github.com/docker/go-units v0.4.0 // indirect
 	github.com/gin-gonic/gin v1.6.3
 	github.com/go-redis/redis/v8 v8.2.3
+	github.com/levigross/grequests v0.0.0-20190908174114-253788527a1a
 	github.com/opencontainers/go-digest v1.0.0 // indirect
 	github.com/sirupsen/logrus v1.7.0
 	github.com/spf13/cobra v1.0.0

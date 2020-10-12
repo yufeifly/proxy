@@ -11,17 +11,18 @@ import (
 	"github.com/yufeifly/proxy/utils"
 )
 
-// MigrateContainer handler for migrating container
+// MigrateContainer handler for redirecting request of migrating container
 func MigrateContainer(c *gin.Context) {
-	Container := c.Query("container")
-	CheckpointID := c.Query("checkpointID")
-	SrcIP := c.Query("destIP")
-	SrcPort := c.Query("srcPort")
-	DestIP := c.Query("destIP")
-	DestPort := c.Query("destPort")
-	CheckpointDir := c.Query("checkpointDir")
 
-	opts := model.MigrateOpts{
+	Container := c.Query("Container")
+	CheckpointID := c.Query("CheckpointID")
+	CheckpointDir := c.Query("CheckpointDir")
+	SrcIP := c.Query("SrcIP")
+	SrcPort := c.Query("srcPort")
+	DestIP := c.Query("DestIP")
+	DestPort := c.Query("DestPort")
+
+	opts := model.MigrateReqOpts{
 		Src: model.Address{
 			IP:   SrcIP,
 			Port: SrcPort,
@@ -34,13 +35,12 @@ func MigrateContainer(c *gin.Context) {
 		CheckpointID:  CheckpointID,
 		CheckpointDir: CheckpointDir,
 	}
-	err := migration.TryMigrate(opts)
+
+	err := migration.TrySendMigrate(opts)
 	if err != nil {
 		utils.ReportErr(c, err)
 		logrus.Panic(err)
 	}
 	//
-	c.JSON(200, gin.H{
-		"result": "success",
-	})
+	c.JSON(200, gin.H{"result": "success"})
 }

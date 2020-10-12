@@ -2,23 +2,29 @@ package migration
 
 import (
 	"github.com/sirupsen/logrus"
+	"github.com/yufeifly/proxy/client"
 	"github.com/yufeifly/proxy/model"
 	"github.com/yufeifly/proxy/ticket"
 	"time"
 )
 
 // TryMigrate migrate redis service
-func TryMigrate(opts model.MigrateOpts) error {
+func TrySendMigrate(opts model.MigrateReqOpts) error {
 
 	// select a dst node, and open connection to dst
 
 	// set global lock
-	ticket.T.Set()
-	logrus.Warn("ticket set")
+	ticket.T.SetTicket(ticket.Logging)
+	logrus.Warn("ticket set logging")
 
 	// write log files to dst
 
 	// send migrate request to src node
+	cli := client.Client{}
+	err := cli.SendMigrate(opts)
+	if err != nil {
+		return err
+	}
 
 	time.Sleep(60 * time.Second)
 
@@ -38,7 +44,6 @@ func TryMigrate(opts model.MigrateOpts) error {
 
 	// downtime end
 	// unset global lock
-	ticket.T.UnSet()
 	logrus.Warn("ticket unset")
 	return nil
 }

@@ -11,9 +11,9 @@ import (
 
 // Start ContainerStart handler
 func Start(c *gin.Context) {
-	containerID := c.Query("containerId")
-	checkpointID := c.Query("checkpointID")
-	checkpointDir := c.Query("checkpointDir")
+	containerID := c.PostForm("ContainerID")
+	checkpointID := c.PostForm("CheckpointID")
+	checkpointDir := c.PostForm("CheckpointDir")
 
 	startOpts := model.StartOpts{
 		CStartOpts: types.ContainerStartOptions{

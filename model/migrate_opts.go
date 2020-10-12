@@ -1,11 +1,16 @@
 package model
 
-type MigrateOpts struct {
+type MigrateReqOpts struct {
 	Src           Address
 	Dst           Address
 	Container     string
 	CheckpointID  string
 	CheckpointDir string
-	//DestIP        string
-	//DestPort      string
+}
+
+type MigrateOpts struct {
+	Address
+	Container     string
+	CheckpointID  string
+	CheckpointDir string
 }

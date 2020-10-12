@@ -39,16 +39,14 @@ func NewMigrateCommand(proxyCli *command.ProxyCli) *cobra.Command {
 
 func runMigrate(proxyCli *command.ProxyCli, opts migrateOpts) error {
 	client := proxyCli.Client()
-	migOpts := model.MigrateOpts{
+	migOpts := model.MigrateReqOpts{
 		Container:     opts.container,
 		CheckpointID:  opts.checkpoint,
 		CheckpointDir: opts.checkpointDir,
-		//DestIP:        opts.destination,
-		//DestPort:      opts.destination,
 	}
-	err := client.Migrate(context.Background(), migOpts)
-	if err != nil {
-		return err
-	}
+	//err := client.Migrate(context.Background(), migOpts)
+	//if err != nil {
+	//	return err
+	//}
 	return nil
 }

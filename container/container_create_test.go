@@ -15,8 +15,8 @@ func TestCreateContainer(t *testing.T) {
 		Cmd:           "",
 		//DestIP:        "",
 	}
-	_, err := CreateContainer(createOpts)
-	if err != nil {
-		fmt.Println("TestCreateContainer err: ", err)
-	}
+	//_, err := CreateContainer(createOpts)
+	//if err != nil {
+	//	fmt.Println("TestCreateContainer err: ", err)
+	//}
 }
