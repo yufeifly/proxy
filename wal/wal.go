@@ -4,28 +4,29 @@ import (
 	"fmt"
 	"github.com/sirupsen/logrus"
 	"github.com/yufeifly/proxy/client"
+	"github.com/yufeifly/proxy/model"
 )
 
-var logger *Logger
+var logger *model.Logger
 var consumer *Consumed
 
 func init() {
-	logger = NewLogger()
+	logger = model.NewLogger()
 	consumer = NewConsumed()
 }
 
 // DataLog
 func DataLog(data string) error {
 	logger.Lock()
-	logger.count++
-	logger.logQueue = append(logger.logQueue, data)
-	if logger.count == logger.capacity {
+	logger.Count++
+	logger.LogQueue = append(logger.LogQueue, data)
+	if logger.Count == logger.Capacity {
 		fmt.Println("send to dst by goroutine")
 		cli := client.Client{}
-		cli.SendLog(logger.logQueue)
+		cli.SendLog(logger.Log)
 		logger.TotalSend++
 		logger.ClearQueue()
-		logger.count = 0
+		logger.Count = 0
 	}
 	logger.Unlock()
 	return nil
@@ -42,12 +43,21 @@ func UnlockLogger() {
 	logger.Unlock()
 }
 
-func SendLogEntry() {
-	logrus.Info("send leftover logs")
+// SendLastLog send the last log tp dst
+func SendLastLog() error {
+	logrus.Info("send the last log")
 	cli := client.Client{}
+
 	logger.Lock()
-	cli.SendLog(logger.logQueue)
+	defer logger.Unlock()
+
+	logger.SetLastFlag()
+	err := cli.SendLog(logger.Log)
+	if err != nil {
+		return err
+	}
 	logger.TotalSend++
-	logger.count = 0
-	logger.Unlock()
+	logger.Count = 0
+
+	return nil
 }

@@ -1,4 +1,4 @@
-package wal
+package config
 
 const (
 	Capacity = 10

@@ -5,9 +5,11 @@ import (
 	"fmt"
 	"github.com/levigross/grequests"
 	"github.com/sirupsen/logrus"
+	"github.com/yufeifly/proxy/model"
 )
 
-func (cli *Client) SendLog(data []string) error {
+// SendLog send log to dst
+func (cli *Client) SendLog(data model.Log) error {
 	fmt.Printf("data to send: %v\n", data)
 	dataJson, _ := json.Marshal(data)
 	ro := &grequests.RequestOptions{
