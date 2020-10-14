@@ -10,9 +10,11 @@ import (
 )
 
 // TryMigrate migrate redis service
-func TrySendMigrate(opts model.MigrateReqOpts) error {
+func TrySendMigrate(reqOpts model.MigrateReqOpts) error {
 
-	// select a dst node, and open connection to dst
+	if reqOpts.Dst.IP == "" || reqOpts.Dst.Port == "" {
+		// todo select a dst node, and open connection to dst
+	}
 
 	logrus.Warn("ticket set logging")
 	ticket.T.SetTicket(ticket.Logging)
@@ -21,10 +23,12 @@ func TrySendMigrate(opts model.MigrateReqOpts) error {
 	// send migrate request to src node
 	go func() error {
 		cli := client.Client{}
-		err := cli.SendMigrate(opts)
+		err := cli.SendMigrate(reqOpts)
 		if err != nil {
+			logrus.Errorf("cli.SendMigrate failed, err: %v", err)
 			return err
 		}
+		logrus.Warn("container dst started")
 		started <- true
 		return nil
 	}()
@@ -33,18 +37,23 @@ func TrySendMigrate(opts model.MigrateReqOpts) error {
 	// when dst starts, open redis connection
 	//  dst consume logs in the meantime
 	// wait until all log files consumed(no whole log file)
-	ticker := time.NewTicker(200 * time.Millisecond)
+	ticker := time.NewTicker(1000 * time.Millisecond)
 FOR:
 	for {
 		select {
 		case <-started:
+			logrus.Warn("get value from chan(started)")
 			if wal.LockAndGetTotalSend() == 0 {
+				wal.UnlockLogger()
 				break FOR
 			}
 		case <-ticker.C:
+			logrus.Info("tick")
 			sent := wal.LockAndGetTotalSend()
-			consumed := wal.LockAndGetTotal()
+			consumed := wal.LockAndGetTotalConsumed()
 			if sent == 0 {
+				wal.UnlockConsumer()
+				wal.UnlockLogger()
 				continue
 			}
 			if sent-consumed < 1 {
@@ -60,16 +69,21 @@ FOR:
 	}
 
 	// end leftover log
-	wal.SendLastLog()
+	err := wal.SendLastLog()
+	if err != nil {
+		logrus.Errorf("wal.SendLastLog failed, err: %v", err)
+		return err
+	}
 
 	// wait until the last log consumed by dst
 	for {
 		<-ticker.C
 		sent := wal.LockAndGetTotalSend()
-		consumed := wal.LockAndGetTotal()
+		consumed := wal.LockAndGetTotalConsumed()
 		if sent == consumed {
 			// switch, requests redirect to dst node
 			logrus.Info("switch, requests redirect to dst node")
+			logrus.Info("downtime end")
 			break
 		}
 	}
@@ -78,6 +92,8 @@ FOR:
 	// downtime end, unset global lock
 	logrus.Warn("ticket unset")
 	ticket.T.UnSet()
+
+	// tell the dst consumer goroutine to stop
 
 	return nil
 }

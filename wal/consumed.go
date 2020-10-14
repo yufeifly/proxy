@@ -20,7 +20,7 @@ func ConsumedAddOne() {
 	consumer.Unlock()
 }
 
-func LockAndGetTotal() int {
+func LockAndGetTotalConsumed() int {
 	var ret int
 	consumer.Lock()
 	ret = consumer.Total

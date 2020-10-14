@@ -3,6 +3,7 @@ package client
 import (
 	"encoding/json"
 	"github.com/levigross/grequests"
+	"github.com/sirupsen/logrus"
 	"github.com/yufeifly/proxy/model"
 )
 
@@ -25,6 +26,7 @@ func (cli *Client) SendMigrate(opts model.MigrateReqOpts) error {
 
 	url := "http://127.0.0.1:6789/container/migrate"
 	_, err = grequests.Post(url, ro)
+	logrus.Warn("SendMigrate finished")
 	if err != nil {
 		return err
 	}

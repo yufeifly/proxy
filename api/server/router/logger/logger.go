@@ -6,5 +6,5 @@ import (
 )
 
 func InitRoutes(r *gin.Engine) {
-	r.POST("/log/consumed", handlers.LogConsumeAdder)
+	r.POST("/log/consume", handlers.LogConsumeAdder)
 }
