@@ -14,6 +14,7 @@ func Start(c *gin.Context) {
 	containerID := c.PostForm("ContainerID")
 	checkpointID := c.PostForm("CheckpointID")
 	checkpointDir := c.PostForm("CheckpointDir")
+	address := c.PostForm("Address")
 
 	startOpts := model.StartOpts{
 		CStartOpts: types.ContainerStartOptions{
@@ -23,12 +24,17 @@ func Start(c *gin.Context) {
 		ContainerID: containerID,
 	}
 
-	err := container.StartContainer(startOpts)
+	targetAddress, err := utils.ParseAddress(address)
+
+	startReqOpts := model.StartReqOpts{
+		Address:   targetAddress,
+		StartOpts: startOpts,
+	}
+
+	err = container.StartContainer(startReqOpts)
 	if err != nil {
 		utils.ReportErr(c, err)
 		logrus.Panic(err)
 	}
-	c.JSON(200, gin.H{
-		"result": "success",
-	})
+	c.JSON(200, gin.H{"result": "success"})
 }

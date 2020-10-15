@@ -7,6 +7,7 @@ import (
 	"github.com/sirupsen/logrus"
 	"github.com/yufeifly/proxy/api/server/httputils"
 	"github.com/yufeifly/proxy/container"
+	"github.com/yufeifly/proxy/model"
 	"github.com/yufeifly/proxy/utils"
 	"strconv"
 )
@@ -14,7 +15,7 @@ import (
 // List handler for redirecting request of listing container(s)
 func List(c *gin.Context) {
 	header := "container.List"
-
+	// get list options
 	filter, err := filters.FromParam(c.Query("filters"))
 	if err != nil {
 		logrus.Panic(err)
@@ -35,8 +36,15 @@ func List(c *gin.Context) {
 		}
 		listOpts.Limit = limit
 	}
+	// get target address
+	targetAddr, err := utils.ParseAddress(c.Query("Address"))
 
-	containers, err := container.ListContainers(listOpts)
+	listReqOpts := model.ListReqOpts{
+		Address:              targetAddr,
+		ContainerListOptions: listOpts,
+	}
+
+	containers, err := container.ListContainers(listReqOpts)
 	if err != nil {
 		utils.ReportErr(c, err)
 		logrus.Panic(err)

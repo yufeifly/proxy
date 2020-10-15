@@ -1,3 +1,7 @@
+/*
+Q: how to tell the dst consumer goroutine to stop?
+A: via function wal.SendLastLog()
+*/
 package migration
 
 import (
@@ -35,7 +39,7 @@ func TrySendMigrate(reqOpts model.MigrateReqOpts) error {
 
 	// write log files to dst
 	// when dst starts, open redis connection
-	//  dst consume logs in the meantime
+	// dst consume logs in the meantime
 	// wait until all log files consumed(no whole log file)
 	ticker := time.NewTicker(1000 * time.Millisecond)
 FOR:
@@ -68,7 +72,8 @@ FOR:
 		}
 	}
 
-	// end leftover log
+	// send the last log with flag "true" to dst,
+	// true flag tells dst that this is the last one, so the consumer goroutine can stop
 	err := wal.SendLastLog()
 	if err != nil {
 		logrus.Errorf("wal.SendLastLog failed, err: %v", err)
@@ -92,8 +97,6 @@ FOR:
 	// downtime end, unset global lock
 	logrus.Warn("ticket unset")
 	ticket.T.UnSet()
-
-	// tell the dst consumer goroutine to stop
 
 	return nil
 }

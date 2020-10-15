@@ -27,6 +27,7 @@ func Set(key, val string) error {
 	return nil
 }
 
+//
 func writeLog(key, val string) error {
 	logrus.Warn("operation send to message queue")
 	str := []string{key, val}

@@ -12,7 +12,7 @@ func InitRoutes(r *gin.Engine) {
 	//  list containers
 	r.GET("/container/list", handlers.List)
 	//  stop a container
-	//r.POST("/container/stop", handlers.Stop)
+	r.POST("/container/stop", handlers.Stop)
 	//  create a container
 	//r.POST("/container/create", handlers.Create)
 	//  create a container checkpoint

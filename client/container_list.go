@@ -4,13 +4,17 @@ import (
 	"encoding/json"
 	"github.com/docker/docker/api/types"
 	"github.com/levigross/grequests"
+	"github.com/yufeifly/proxy/model"
 )
 
-func (cli *Client) ContainerList(opts types.ContainerListOptions) ([]types.Container, error) {
+// ContainerList send request to target node to get the containers's info
+func (cli *Client) ContainerList(opts model.ListReqOpts) ([]types.Container, error) {
+	listOptsJson, _ := json.Marshal(opts.ContainerListOptions)
+
 	ro := &grequests.RequestOptions{
-		QueryStruct: opts,
+		JSON: listOptsJson,
 	}
-	url := "http://127.0.0.1:6789/container/list"
+	url := "http://" + opts.IP + ":" + opts.Port + "/container/list"
 	resp, err := grequests.Get(url, ro)
 	if err != nil {
 		return nil, err

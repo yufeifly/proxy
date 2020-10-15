@@ -6,3 +6,8 @@ type StartOpts struct {
 	CStartOpts  types.ContainerStartOptions
 	ContainerID string
 }
+
+type StartReqOpts struct {
+	Address
+	StartOpts
+}

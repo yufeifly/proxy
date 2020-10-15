@@ -56,14 +56,7 @@ func SendLastLog() error {
 	if err != nil {
 		return err
 	}
-	//logger.TotalSend++
-	//logger.Count = 0
-	//if len(logger.LogQueue) > 0 {
-	//	logger.TotalSend++
-	//	logger.Count--
-	//}
 
 	logrus.Info("SetLastLog finished")
-	// ? set an empty log, to let dst consumer goroutine to stop
 	return nil
 }

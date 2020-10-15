@@ -5,20 +5,17 @@ import (
 	"github.com/yufeifly/proxy/model"
 )
 
-func (cli *Client) ContainerStart(opts model.StartReqOpts) error {
+func (cli *Client) StopContainer(opts model.StopReqOpts) error {
 	data := make(map[string]string)
 	data["ContainerID"] = opts.ContainerID
-	data["CheckpointID"] = opts.CStartOpts.CheckpointID
-	data["CheckpointDir"] = opts.CStartOpts.CheckpointDir
+	data["Timeout"] = opts.Timeout
 
 	ro := &grequests.RequestOptions{
 		Data: data,
 	}
-	url := "http://" + opts.IP + ":" + opts.Port + "/container/start"
+	url := "http://" + opts.IP + ":" + opts.Port + "/container/stop"
 	_, err := grequests.Post(url, ro)
 	if err != nil {
 		return err
 	}
-
-	return nil
 }
