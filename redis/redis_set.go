@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"github.com/go-redis/redis/v8"
 	"github.com/sirupsen/logrus"
+	"github.com/yufeifly/proxy/client"
 	"github.com/yufeifly/proxy/cusErr"
 	"github.com/yufeifly/proxy/scheduler"
 	"github.com/yufeifly/proxy/ticket"
@@ -26,8 +27,9 @@ func Set(service string, key, val string) error {
 	if err != nil {
 		return err
 	}
-	// do set
-	err = doSetKV(ser.ServiceCli, key, val)
+	// send set request
+	cli := client.Client{}
+	err = cli.RedisSet(ser, key, val)
 	if err != nil {
 		return err
 	}

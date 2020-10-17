@@ -1,7 +1,6 @@
 package model
 
 type ServiceOpts struct {
-	ID        string
-	NodeAddr  Address
-	Container string
+	ID       string
+	NodeAddr Address
 }

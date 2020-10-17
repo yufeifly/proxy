@@ -4,6 +4,7 @@ import (
 	"context"
 	"github.com/go-redis/redis/v8"
 	"github.com/sirupsen/logrus"
+	"github.com/yufeifly/proxy/client"
 	"github.com/yufeifly/proxy/cusErr"
 	"github.com/yufeifly/proxy/scheduler"
 )
@@ -15,8 +16,9 @@ func Get(service string, key string) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	// do set
-	val, err := doGetKV(ser.ServiceCli, key)
+	// send get request
+	cli := client.Client{}
+	val, err := cli.RedisGet(ser, key)
 	if err != nil {
 		return "", err
 	}
