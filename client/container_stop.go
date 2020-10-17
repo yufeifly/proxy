@@ -18,4 +18,5 @@ func (cli *Client) StopContainer(opts model.StopReqOpts) error {
 	if err != nil {
 		return err
 	}
+	return nil
 }

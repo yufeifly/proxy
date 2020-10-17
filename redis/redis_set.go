@@ -1,16 +1,18 @@
 package redis
 
 import (
+	"context"
 	"encoding/json"
+	"github.com/go-redis/redis/v8"
 	"github.com/sirupsen/logrus"
 	"github.com/yufeifly/proxy/cusErr"
-	"github.com/yufeifly/proxy/dal"
+	"github.com/yufeifly/proxy/scheduler"
 	"github.com/yufeifly/proxy/ticket"
 	"github.com/yufeifly/proxy/wal"
 )
 
 // Set set kv pair to redis service
-func Set(key, val string) error {
+func Set(service string, key, val string) error {
 	// if get ticket
 	token := ticket.T.GetTicket()
 	if token == ticket.ShutWrite {
@@ -19,11 +21,29 @@ func Set(key, val string) error {
 	if token == ticket.Logging {
 		writeLog(key, val)
 	}
-	// do redis set
-	err := dal.SetKV(key, val)
+	// get service
+	ser, err := scheduler.DefaultScheduler.GetService(service)
 	if err != nil {
 		return err
 	}
+	// do set
+	err = doSetKV(ser.ServiceCli, key, val)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+//
+func doSetKV(cli *redis.Client, key, val string) error {
+	err := cli.Set(context.Background(), key, val, 0).Err()
+	if err != nil {
+		return err
+	}
+	logrus.WithFields(logrus.Fields{
+		"key":   key,
+		"value": val,
+	}).Info("pair set")
 	return nil
 }
 
