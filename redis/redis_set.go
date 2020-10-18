@@ -1,9 +1,7 @@
 package redis
 
 import (
-	"context"
 	"encoding/json"
-	"github.com/go-redis/redis/v8"
 	"github.com/sirupsen/logrus"
 	"github.com/yufeifly/proxy/client"
 	"github.com/yufeifly/proxy/cusErr"
@@ -13,23 +11,23 @@ import (
 )
 
 // Set set kv pair to redis service
-func Set(service string, key, val string) error {
+func Set(ProxyService string, key, val string) error {
 	// if get ticket
 	token := ticket.T.GetTicket()
 	if token == ticket.ShutWrite {
 		return cusErr.ErrServiceNotAvailable
 	}
-	if token == ticket.Logging {
-		writeLog(key, val)
-	}
 	// get service
-	ser, err := scheduler.DefaultScheduler.GetService(service)
+	service, err := scheduler.DefaultScheduler.GetService(ProxyService)
 	if err != nil {
 		return err
+	}
+	if token == ticket.Logging {
+		writeLog(service, key, val)
 	}
 	// send set request
 	cli := client.Client{}
-	err = cli.RedisSet(ser, key, val)
+	err = cli.RedisSet(service, key, val)
 	if err != nil {
 		return err
 	}
@@ -37,23 +35,10 @@ func Set(service string, key, val string) error {
 }
 
 //
-func doSetKV(cli *redis.Client, key, val string) error {
-	err := cli.Set(context.Background(), key, val, 0).Err()
-	if err != nil {
-		return err
-	}
-	logrus.WithFields(logrus.Fields{
-		"key":   key,
-		"value": val,
-	}).Info("pair set")
-	return nil
-}
-
-//
-func writeLog(key, val string) error {
+func writeLog(ser *scheduler.Service, key, val string) error {
 	logrus.Warn("operation send to message queue")
 	str := []string{key, val}
 	strJson, _ := json.Marshal(str)
-	err := wal.DataLog(string(strJson))
+	err := wal.DataLog(ser, string(strJson))
 	return err
 }

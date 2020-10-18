@@ -35,7 +35,7 @@ func (cli *Client) RedisSet(service *scheduler.Service, key, val string) error {
 	ro := &grequests.RequestOptions{
 		Data: data,
 	}
-	url := "http://" + service.Node.IP + ":" + service.Node.Port + "/redis/get"
+	url := "http://" + service.Node.IP + ":" + service.Node.Port + "/redis/set"
 	_, err := grequests.Post(url, ro)
 	if err != nil {
 		return err

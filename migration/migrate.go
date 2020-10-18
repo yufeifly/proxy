@@ -8,17 +8,29 @@ import (
 	"github.com/sirupsen/logrus"
 	"github.com/yufeifly/proxy/client"
 	"github.com/yufeifly/proxy/model"
+	"github.com/yufeifly/proxy/scheduler"
 	"github.com/yufeifly/proxy/ticket"
 	"github.com/yufeifly/proxy/wal"
 	"time"
 )
 
 // TryMigrate migrate redis service
-func TrySendMigrate(reqOpts model.MigrateReqOpts) error {
+func TrySendMigrate(ProxyService string, reqOpts model.MigrateReqOpts) error {
 
 	if reqOpts.Dst.IP == "" || reqOpts.Dst.Port == "" {
 		// todo select a dst node, and open connection to dst
+		reqOpts.Src.IP = "127.0.0.1"
+		reqOpts.Src.Port = "6789"
 	}
+
+	// add service.Shadow
+	service, _ := scheduler.DefaultScheduler.GetService(ProxyService)
+	addr := model.Address{
+		IP:   reqOpts.Dst.IP,
+		Port: reqOpts.Dst.Port,
+	}
+	service.AddShadow(addr)
+	reqOpts.ServiceID = service.ID // of worker
 
 	logrus.Warn("ticket set logging")
 	ticket.T.SetTicket(ticket.Logging)
@@ -74,7 +86,7 @@ FOR:
 
 	// send the last log with flag "true" to dst,
 	// true flag tells dst that this is the last one, so the consumer goroutine can stop
-	err := wal.SendLastLog()
+	err := wal.SendLastLog(service.ID, addr)
 	if err != nil {
 		logrus.Errorf("wal.SendLastLog failed, err: %v", err)
 		return err
@@ -86,7 +98,7 @@ FOR:
 		sent := wal.LockAndGetTotalSend()
 		consumed := wal.LockAndGetTotalConsumed()
 		if sent == consumed {
-			// switch, requests redirect to dst node
+			// todo switch, requests redirect to dst node
 			logrus.Info("switch, requests redirect to dst node")
 			logrus.Info("downtime end")
 			break

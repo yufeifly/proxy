@@ -6,7 +6,7 @@ import (
 )
 
 func (cli *Client) StopContainer(opts model.StopReqOpts) error {
-	data := make(map[string]string)
+	data := make(map[string]string, 2)
 	data["ContainerID"] = opts.ContainerID
 	data["Timeout"] = opts.Timeout
 

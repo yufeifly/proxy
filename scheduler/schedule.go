@@ -19,8 +19,8 @@ func NewScheduler() *Scheduler {
 	return &Scheduler{}
 }
 
-func (s *Scheduler) AddService(service *Service) {
-	s.Map.Store(service.ID, service)
+func (s *Scheduler) AddService(sID string, service *Service) {
+	s.Map.Store(sID, service)
 }
 
 func (s *Scheduler) GetService(serviceID string) (*Service, error) {

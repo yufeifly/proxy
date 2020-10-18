@@ -11,6 +11,7 @@ func (cli *Client) SendMigrate(opts model.MigrateReqOpts) error {
 	mopts := model.MigrateOpts{
 		Address:       opts.Dst,
 		Container:     opts.Container,
+		ServiceID:     opts.ServiceID,
 		CheckpointID:  opts.CheckpointID,
 		CheckpointDir: opts.CheckpointDir,
 	}
@@ -24,7 +25,8 @@ func (cli *Client) SendMigrate(opts model.MigrateReqOpts) error {
 		JSON: moptsJson,
 	}
 
-	url := "http://127.0.0.1:6789/container/migrate"
+	//url := "http://127.0.0.1:6789/container/migrate"
+	url := "http://" + opts.Src.IP + ":" + opts.Src.Port + "/container/migrate"
 	_, err = grequests.Post(url, ro)
 	logrus.Warn("SendMigrate finished")
 	if err != nil {

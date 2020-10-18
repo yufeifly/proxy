@@ -13,7 +13,7 @@ func TestScheduler_AddService(t *testing.T) {
 			IP:   "127.0.0.1",
 			Port: "6789",
 		},
-		ContainerID: "123456",
+		//ContainerID: "123456",
 	}
 	DefaultScheduler.AddService(service)
 	get, _ := DefaultScheduler.GetService(service.ID)

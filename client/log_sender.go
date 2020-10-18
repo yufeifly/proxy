@@ -9,14 +9,19 @@ import (
 )
 
 // SendLog send log to dst
-func (cli *Client) SendLog(data model.Log) error {
+func (cli *Client) SendLog(serviceID string, data model.Log) error {
 	fmt.Printf("data to send: %v\n", data)
 	dataJson, _ := json.Marshal(data)
+	dataPost := make(map[string]string)
+	dataPost["Service"] = serviceID
+
 	ro := &grequests.RequestOptions{
 		JSON: dataJson,
+		Data: dataPost,
 	}
 
-	url := "http://127.0.0.1:6789/logger"
+	//url := "http://127.0.0.1:6789/logger"
+	url := "http://" + cli.Dest.IP + ":" + cli.Dest.Port + "/logger"
 	resp, err := grequests.Post(url, ro)
 	if err != nil {
 		return err

@@ -7,4 +7,5 @@ var (
 	ErrServiceNotFound     = errors.New("service not found")
 	ErrServiceNotAvailable = errors.New("service not available")
 	ErrBadAddress          = errors.New("bad address")
+	ErrBadParams           = errors.New("bad params")
 )

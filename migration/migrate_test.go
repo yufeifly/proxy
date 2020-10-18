@@ -20,7 +20,7 @@ func TestTrySendMigrate(t *testing.T) {
 		CheckpointID:  "cp-redis",
 		CheckpointDir: "/tmp",
 	}
-	err := TrySendMigrate(reqOpts)
+	err := TrySendMigrate("service1", reqOpts)
 	if err != nil {
 		t.Errorf("TrySendMigrate failed, err : %v", err)
 	} else {

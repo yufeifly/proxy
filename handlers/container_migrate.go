@@ -15,6 +15,7 @@ import (
 func MigrateContainer(c *gin.Context) {
 
 	Container := c.Query("Container")
+	ProxyService := c.Query("Service") // of proxy
 	CheckpointID := c.Query("CheckpointID")
 	CheckpointDir := c.Query("CheckpointDir")
 	SrcIP := c.Query("SrcIP")
@@ -31,12 +32,13 @@ func MigrateContainer(c *gin.Context) {
 			IP:   DestIP,
 			Port: DestPort,
 		},
-		Container:     Container,
+		Container: Container,
+		//ServiceID:     ServiceID,
 		CheckpointID:  CheckpointID,
 		CheckpointDir: CheckpointDir,
 	}
 
-	err := migration.TrySendMigrate(opts)
+	err := migration.TrySendMigrate(ProxyService, opts)
 	if err != nil {
 		utils.ReportErr(c, err)
 		logrus.Panic(err)

@@ -5,8 +5,9 @@ import (
 	"github.com/yufeifly/proxy/model"
 )
 
+// ContainerStart send start request
 func (cli *Client) ContainerStart(opts model.StartReqOpts) error {
-	data := make(map[string]string)
+	data := make(map[string]string, 3)
 	data["ContainerID"] = opts.ContainerID
 	data["CheckpointID"] = opts.CStartOpts.CheckpointID
 	data["CheckpointDir"] = opts.CStartOpts.CheckpointDir
@@ -19,6 +20,5 @@ func (cli *Client) ContainerStart(opts model.StartReqOpts) error {
 	if err != nil {
 		return err
 	}
-
 	return nil
 }
