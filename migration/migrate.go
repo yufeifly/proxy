@@ -10,13 +10,15 @@ import (
 	"github.com/yufeifly/proxy/model"
 	"github.com/yufeifly/proxy/scheduler"
 	"github.com/yufeifly/proxy/ticket"
+	"github.com/yufeifly/proxy/utils"
 	"github.com/yufeifly/proxy/wal"
 	"time"
 )
 
 // TryMigrate migrate redis service
 func TrySendMigrate(reqOpts model.MigrateReqOpts) error {
-	// todo select a dst node, and open connection to dst
+	logrus.Infof("TrySendMigrate.reqOpts: %v", reqOpts)
+	// todo select a dst node
 	if reqOpts.Dst.IP == "" || reqOpts.Dst.Port == "" {
 		reqOpts.Src.IP = "127.0.0.1"
 		reqOpts.Src.Port = "6789"
@@ -28,13 +30,17 @@ func TrySendMigrate(reqOpts model.MigrateReqOpts) error {
 		IP:   reqOpts.Dst.IP,
 		Port: reqOpts.Dst.Port,
 	}
+	logrus.Infof("TrySendMigrate.service: %v", service)
+	if service == nil {
+		return nil
+	}
 	service.AddShadow(addr)
 	reqOpts.ServiceID = service.ID // of worker
 
 	logrus.Warn("ticket set logging")
 	ticket.T.SetTicket(ticket.Logging)
 
-	started := make(chan bool)
+	started := make(chan bool, 2)
 	// send migrate request to src node
 	go func() error {
 		cli := client.Client{}
@@ -45,6 +51,7 @@ func TrySendMigrate(reqOpts model.MigrateReqOpts) error {
 		}
 		logrus.Warn("container dst started")
 		started <- true
+		logrus.Warn("container dst started, true write to chan")
 		return nil
 	}()
 
@@ -52,7 +59,7 @@ func TrySendMigrate(reqOpts model.MigrateReqOpts) error {
 	// when dst starts, open redis connection
 	// dst consume logs in the meantime
 	// wait until all log files consumed(no whole log file)
-	ticker := time.NewTicker(1000 * time.Millisecond)
+	ticker := time.NewTicker(500 * time.Millisecond)
 FOR:
 	for {
 		select {
@@ -63,9 +70,10 @@ FOR:
 				break FOR
 			}
 		case <-ticker.C:
-			logrus.Info("tick")
+			logrus.Info("ticker")
 			sent := wal.LockAndGetTotalSend()
 			consumed := wal.LockAndGetTotalConsumed()
+			logrus.Infof("sent: %v, consumed: %v", sent, consumed)
 			if sent == 0 {
 				wal.UnlockConsumer()
 				wal.UnlockLogger()
@@ -76,7 +84,7 @@ FOR:
 				ticket.T.SetTicket(ticket.ShutWrite)
 				wal.UnlockConsumer()
 				wal.UnlockLogger()
-				break
+				break FOR
 			}
 			wal.UnlockConsumer()
 			wal.UnlockLogger()
@@ -97,11 +105,25 @@ FOR:
 		sent := wal.LockAndGetTotalSend()
 		consumed := wal.LockAndGetTotalConsumed()
 		if sent == consumed {
+			wal.UnlockConsumer()
+			wal.UnlockLogger()
 			// todo switch, requests redirect to dst node
-			logrus.Info("switch, requests redirect to dst node")
+			logrus.Info("switching, requests redirect to dst node")
+			opts := model.ServiceOpts{
+				ID:             utils.MakeNameForService(reqOpts.ServiceID),
+				ProxyServiceID: reqOpts.ProxyService,
+				NodeAddr: model.Address{
+					IP:   reqOpts.Dst.IP,
+					Port: reqOpts.Dst.Port,
+				},
+			}
+			logrus.Infof("new ServiceOpts: %v", opts)
+			scheduler.Register(reqOpts.ProxyService, opts)
 			logrus.Info("downtime end")
 			break
 		}
+		wal.UnlockConsumer()
+		wal.UnlockLogger()
 	}
 	ticker.Stop() // shut ticker
 
