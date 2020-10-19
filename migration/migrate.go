@@ -15,16 +15,15 @@ import (
 )
 
 // TryMigrate migrate redis service
-func TrySendMigrate(ProxyService string, reqOpts model.MigrateReqOpts) error {
-
+func TrySendMigrate(reqOpts model.MigrateReqOpts) error {
+	// todo select a dst node, and open connection to dst
 	if reqOpts.Dst.IP == "" || reqOpts.Dst.Port == "" {
-		// todo select a dst node, and open connection to dst
 		reqOpts.Src.IP = "127.0.0.1"
 		reqOpts.Src.Port = "6789"
 	}
 
-	// add service.Shadow
-	service, _ := scheduler.DefaultScheduler.GetService(ProxyService)
+	// add service.Shadow first, start logging second!
+	service, _ := scheduler.DefaultScheduler.GetService(reqOpts.ProxyService)
 	addr := model.Address{
 		IP:   reqOpts.Dst.IP,
 		Port: reqOpts.Dst.Port,
@@ -86,7 +85,7 @@ FOR:
 
 	// send the last log with flag "true" to dst,
 	// true flag tells dst that this is the last one, so the consumer goroutine can stop
-	err := wal.SendLastLog(service.ID, addr)
+	err := wal.SendLastLog(reqOpts.ProxyService, addr)
 	if err != nil {
 		logrus.Errorf("wal.SendLastLog failed, err: %v", err)
 		return err

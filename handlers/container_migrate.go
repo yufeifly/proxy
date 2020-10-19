@@ -14,7 +14,7 @@ import (
 // MigrateContainer handler for redirecting request of migrating container
 func MigrateContainer(c *gin.Context) {
 
-	Container := c.Query("Container")
+	//Container := c.Query("Container")
 	ProxyService := c.Query("Service") // of proxy
 	CheckpointID := c.Query("CheckpointID")
 	CheckpointDir := c.Query("CheckpointDir")
@@ -32,13 +32,13 @@ func MigrateContainer(c *gin.Context) {
 			IP:   DestIP,
 			Port: DestPort,
 		},
-		Container: Container,
-		//ServiceID:     ServiceID,
+		// ServiceID
+		ProxyService:  ProxyService,
 		CheckpointID:  CheckpointID,
 		CheckpointDir: CheckpointDir,
 	}
 
-	err := migration.TrySendMigrate(ProxyService, opts)
+	err := migration.TrySendMigrate(opts)
 	if err != nil {
 		utils.ReportErr(c, err)
 		logrus.Panic(err)

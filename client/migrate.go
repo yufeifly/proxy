@@ -8,21 +8,22 @@ import (
 )
 
 func (cli *Client) SendMigrate(opts model.MigrateReqOpts) error {
-	mopts := model.MigrateOpts{
-		Address:       opts.Dst,
-		Container:     opts.Container,
+	mOpts := model.MigrateOpts{
+		Address: opts.Dst,
+		//Container:     opts.Container,
 		ServiceID:     opts.ServiceID,
+		ProxyService:  opts.ProxyService,
 		CheckpointID:  opts.CheckpointID,
 		CheckpointDir: opts.CheckpointDir,
 	}
 
-	moptsJson, err := json.Marshal(mopts)
+	mOptsJson, err := json.Marshal(mOpts)
 	if err != nil {
 		return err
 	}
 
 	ro := &grequests.RequestOptions{
-		JSON: moptsJson,
+		JSON: mOptsJson,
 	}
 
 	//url := "http://127.0.0.1:6789/container/migrate"

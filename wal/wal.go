@@ -25,7 +25,11 @@ func DataLog(ser *scheduler.Service, data string) error {
 		cli := client.Client{
 			Dest: ser.Shadow,
 		}
-		cli.SendLog(ser.ID, logger.Log)
+		logWithID := model.LogWithServiceID{
+			Log:            logger.Log,
+			ProxyServiceID: ser.ProxyServiceID,
+		}
+		cli.SendLog(logWithID)
 		logger.TotalSend++
 		logger.ClearQueue()
 		logger.Count = 0
@@ -46,7 +50,7 @@ func UnlockLogger() {
 }
 
 // SendLastLog send the last log to dst
-func SendLastLog(serviceID string, addr model.Address) error {
+func SendLastLog(ProxyServiceID string, addr model.Address) error {
 	logrus.Info("send the last log")
 	cli := client.Client{
 		Dest: addr,
@@ -56,11 +60,15 @@ func SendLastLog(serviceID string, addr model.Address) error {
 	defer logger.Unlock()
 
 	logger.SetLastFlag()
-	err := cli.SendLog(serviceID, logger.Log)
+	logWithID := model.LogWithServiceID{
+		Log:            logger.Log,
+		ProxyServiceID: ProxyServiceID,
+	}
+	err := cli.SendLog(logWithID)
 	if err != nil {
 		return err
 	}
 
-	logrus.Info("SetLastLog finished")
+	logrus.Infof("SetLastLog finished, ProxyServiceID: %v", ProxyServiceID)
 	return nil
 }

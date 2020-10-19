@@ -9,15 +9,15 @@ import (
 )
 
 // SendLog send log to dst
-func (cli *Client) SendLog(serviceID string, data model.Log) error {
-	fmt.Printf("data to send: %v\n", data)
-	dataJson, _ := json.Marshal(data)
-	dataPost := make(map[string]string)
-	dataPost["Service"] = serviceID
+func (cli *Client) SendLog(logWithID model.LogWithServiceID) error {
+	fmt.Printf("data to send: %v\n", logWithID.Log)
+	dataJson, _ := json.Marshal(logWithID)
+	//dataPost := make(map[string]string)
+	//dataPost["Service"] = logWithID.ProxyServiceID
 
 	ro := &grequests.RequestOptions{
 		JSON: dataJson,
-		Data: dataPost,
+		//Data: dataPost,
 	}
 
 	//url := "http://127.0.0.1:6789/logger"

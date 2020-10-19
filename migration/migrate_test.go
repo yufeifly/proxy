@@ -16,11 +16,13 @@ func TestTrySendMigrate(t *testing.T) {
 			IP:   "127.0.0.1",
 			Port: "6789",
 		},
-		Container:     "789ac47088e9",
+		//Container:     "789ac47088e9",
+		ServiceID:     "service.A1",
+		ProxyService:  "service1",
 		CheckpointID:  "cp-redis",
 		CheckpointDir: "/tmp",
 	}
-	err := TrySendMigrate("service1", reqOpts)
+	err := TrySendMigrate(reqOpts)
 	if err != nil {
 		t.Errorf("TrySendMigrate failed, err : %v", err)
 	} else {
