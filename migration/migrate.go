@@ -40,7 +40,7 @@ func TrySendMigrate(reqOpts model.MigrateReqOpts) error {
 	logrus.Warn("ticket set logging")
 	ticket.T.SetTicket(ticket.Logging)
 
-	started := make(chan bool, 2)
+	started := make(chan bool)
 	// send migrate request to src node
 	go func() error {
 		cli := client.Client{}
@@ -65,28 +65,25 @@ FOR:
 		select {
 		case <-started:
 			logrus.Warn("get value from chan(started)")
-			if wal.LockAndGetTotalSend() == 0 {
+			sent, _ := wal.LockAndGetSentConsumed()
+			if sent == 0 {
 				wal.UnlockLogger()
 				break FOR
 			}
 		case <-ticker.C:
 			logrus.Info("ticker")
-			sent := wal.LockAndGetTotalSend()
-			consumed := wal.LockAndGetTotalConsumed()
+			sent, consumed := wal.LockAndGetSentConsumed()
 			logrus.Infof("sent: %v, consumed: %v", sent, consumed)
 			if sent == 0 {
-				wal.UnlockConsumer()
 				wal.UnlockLogger()
 				continue
 			}
 			if sent-consumed < 1 {
 				logrus.Warn("downtime start")
 				ticket.T.SetTicket(ticket.ShutWrite)
-				wal.UnlockConsumer()
 				wal.UnlockLogger()
 				break FOR
 			}
-			wal.UnlockConsumer()
 			wal.UnlockLogger()
 		}
 	}
@@ -102,10 +99,8 @@ FOR:
 	// wait until the last log consumed by dst
 	for {
 		<-ticker.C
-		sent := wal.LockAndGetTotalSend()
-		consumed := wal.LockAndGetTotalConsumed()
+		sent, consumed := wal.LockAndGetSentConsumed()
 		if sent == consumed {
-			wal.UnlockConsumer()
 			wal.UnlockLogger()
 			// todo switch, requests redirect to dst node
 			logrus.Info("switching, requests redirect to dst node")
@@ -122,7 +117,6 @@ FOR:
 			logrus.Info("downtime end")
 			break
 		}
-		wal.UnlockConsumer()
 		wal.UnlockLogger()
 	}
 	ticker.Stop() // shut ticker

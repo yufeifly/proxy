@@ -15,7 +15,7 @@ type LogWithServiceID struct {
 	ProxyServiceID string
 }
 
-func newLog() *Log {
+func NewLog() *Log {
 	return &Log{
 		Last:     false,
 		LogQueue: []string{},
@@ -25,9 +25,10 @@ func newLog() *Log {
 type Logger struct {
 	Log
 	//logQueue  []string // log container
-	Count     int // current log entry count
-	Capacity  int // size of a log page
-	TotalSend int
+	Count         int // current log entry count
+	Capacity      int // size of a log page
+	TotalSend     int
+	TotalConsumed int
 	sync.Mutex
 }
 
@@ -37,10 +38,11 @@ func NewLogger() *Logger {
 			Last:     false,
 			LogQueue: []string{},
 		},
-		Count:     0,
-		Capacity:  config.Capacity,
-		TotalSend: 0,
-		Mutex:     sync.Mutex{},
+		Count:         0,
+		Capacity:      config.Capacity,
+		TotalSend:     0,
+		TotalConsumed: 0,
+		Mutex:         sync.Mutex{},
 	}
 }
 

@@ -8,11 +8,9 @@ import (
 )
 
 var logger *model.Logger
-var consumer *Consumed
 
 func init() {
 	logger = model.NewLogger()
-	consumer = NewConsumed()
 }
 
 // DataLog
@@ -38,11 +36,12 @@ func DataLog(ser *scheduler.Service, data string) error {
 	return nil
 }
 
-func LockAndGetTotalSend() int {
-	var ret int
+// LockAndGetSentConsumed return sent and consumed
+func LockAndGetSentConsumed() (int, int) {
 	logger.Lock()
-	ret = logger.TotalSend
-	return ret
+	sent := logger.TotalSend
+	consumed := logger.TotalConsumed
+	return sent, consumed
 }
 
 func UnlockLogger() {
@@ -71,4 +70,10 @@ func SendLastLog(ProxyServiceID string, addr model.Address) error {
 
 	logrus.Infof("SetLastLog finished, ProxyServiceID: %v", ProxyServiceID)
 	return nil
+}
+
+func ConsumedAdder() {
+	logger.Lock()
+	logger.TotalConsumed++
+	logger.Unlock()
 }

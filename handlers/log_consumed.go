@@ -8,6 +8,6 @@ import (
 
 func LogConsumeAdder(c *gin.Context) {
 	logrus.Info("consumed log add one")
-	wal.ConsumedAddOne()
+	wal.ConsumedAdder()
 	c.JSON(200, gin.H{"result": "success"})
 }
