@@ -18,7 +18,7 @@ func Set(ProxyService string, key, val string) error {
 		return cusErr.ErrServiceNotAvailable
 	}
 	// get service
-	service, err := scheduler.DefaultScheduler.GetService(ProxyService)
+	service, err := scheduler.Default().GetService(ProxyService)
 	if err != nil {
 		return err
 	}

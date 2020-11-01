@@ -17,7 +17,6 @@ import (
 
 // TryMigrate migrate redis service
 func TrySendMigrate(reqOpts model.MigrateReqOpts) error {
-	logrus.Infof("TrySendMigrate.reqOpts: %v", reqOpts)
 	// todo select a dst node
 	if reqOpts.Dst.IP == "" || reqOpts.Dst.Port == "" {
 		reqOpts.Src.IP = "127.0.0.1"
@@ -25,14 +24,15 @@ func TrySendMigrate(reqOpts model.MigrateReqOpts) error {
 	}
 
 	// add service.Shadow first, start logging second!
-	service, _ := scheduler.DefaultScheduler.GetService(reqOpts.ProxyService)
+	service, err := scheduler.Default().GetService(reqOpts.ProxyService)
+	if err != nil {
+		logrus.Errorf("scheduler.GetService err: %v", err)
+		return err
+	}
+	logrus.Infof("TrySendMigrate.service: %v", service)
 	addr := model.Address{
 		IP:   reqOpts.Dst.IP,
 		Port: reqOpts.Dst.Port,
-	}
-	logrus.Infof("TrySendMigrate.service: %v", service)
-	if service == nil {
-		return nil
 	}
 	service.AddShadow(addr)
 	reqOpts.ServiceID = service.ID // of worker
@@ -90,7 +90,7 @@ FOR:
 
 	// send the last log with flag "true" to dst,
 	// true flag tells dst that this is the last one, so the consumer goroutine can stop
-	err := wal.SendLastLog(reqOpts.ProxyService, addr)
+	err = wal.SendLastLog(reqOpts.ProxyService, addr)
 	if err != nil {
 		logrus.Errorf("wal.SendLastLog failed, err: %v", err)
 		return err
@@ -102,17 +102,16 @@ FOR:
 		sent, consumed := wal.LockAndGetSentConsumed()
 		if sent == consumed {
 			wal.UnlockLogger()
-			// todo switch, requests redirect to dst node
+			// switch, requests redirect to dst node
 			logrus.Info("switching, requests redirect to dst node")
 			opts := model.ServiceOpts{
-				ID:             utils.MakeNameForService(reqOpts.ServiceID),
+				ID:             utils.RenameService(reqOpts.ServiceID),
 				ProxyServiceID: reqOpts.ProxyService,
 				NodeAddr: model.Address{
 					IP:   reqOpts.Dst.IP,
 					Port: reqOpts.Dst.Port,
 				},
 			}
-			logrus.Infof("new ServiceOpts: %v", opts)
 			scheduler.Register(reqOpts.ProxyService, opts)
 			logrus.Info("downtime end")
 			break

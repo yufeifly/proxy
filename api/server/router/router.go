@@ -5,6 +5,7 @@ import (
 	"github.com/yufeifly/proxy/api/server/router/container"
 	"github.com/yufeifly/proxy/api/server/router/logger"
 	"github.com/yufeifly/proxy/api/server/router/redis"
+	"github.com/yufeifly/proxy/api/server/router/service"
 )
 
 func InitRoutes() *gin.Engine {
@@ -13,5 +14,6 @@ func InitRoutes() *gin.Engine {
 	redis.InitRoutes(r)
 	container.InitRoutes(r)
 	logger.InitRoutes(r)
+	service.InitRoutes(r)
 	return r
 }

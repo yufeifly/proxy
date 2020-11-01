@@ -9,11 +9,12 @@ import (
 	"github.com/yufeifly/proxy/container"
 	"github.com/yufeifly/proxy/model"
 	"github.com/yufeifly/proxy/utils"
+	"net/http"
 	"strconv"
 )
 
 // List handler for redirecting request of listing container(s)
-func List(c *gin.Context) {
+func ListContainer(c *gin.Context) {
 	header := "container.List"
 	// get list options
 	filter, err := filters.FromParam(c.Query("filters"))
@@ -59,5 +60,5 @@ func List(c *gin.Context) {
 		}).Infof("%s, List infos", header)
 		list[Container.ID[:10]] = Container.Image
 	}
-	c.JSON(200, list)
+	c.JSON(http.StatusOK, list)
 }

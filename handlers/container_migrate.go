@@ -9,41 +9,43 @@ import (
 	"github.com/yufeifly/proxy/migration"
 	"github.com/yufeifly/proxy/model"
 	"github.com/yufeifly/proxy/utils"
+	"net/http"
 )
 
 // MigrateContainer handler for redirecting request of migrating container
 func MigrateContainer(c *gin.Context) {
 
-	//Container := c.Query("Container")
 	ProxyService := c.PostForm("Service") // of proxy
 	CheckpointID := c.PostForm("CheckpointID")
 	CheckpointDir := c.PostForm("CheckpointDir")
-	SrcIP := c.PostForm("SrcIP")
-	SrcPort := c.PostForm("srcPort")
-	DestIP := c.PostForm("DestIP")
-	DestPort := c.PostForm("DestPort")
+	SrcAddr := c.PostForm("Src")
+	DstAddr := c.PostForm("Dst")
+
+	src, err := utils.ParseAddress(SrcAddr)
+	if err != nil {
+		utils.ReportErr(c, err)
+		logrus.Panic(err)
+	}
+	dst, err := utils.ParseAddress(DstAddr)
+	if err != nil {
+		utils.ReportErr(c, err)
+		logrus.Panic(err)
+	}
 
 	opts := model.MigrateReqOpts{
-		Src: model.Address{
-			IP:   SrcIP,
-			Port: SrcPort,
-		},
-		Dst: model.Address{
-			IP:   DestIP,
-			Port: DestPort,
-		},
-		// ServiceID
+		Src:           src,
+		Dst:           dst,
 		ProxyService:  ProxyService,
 		CheckpointID:  CheckpointID,
 		CheckpointDir: CheckpointDir,
 	}
 
-	err := migration.TrySendMigrate(opts)
+	err = migration.TrySendMigrate(opts)
 	if err != nil {
 		utils.ReportErr(c, err)
 		logrus.Panic(err)
 	}
 	logrus.Warn("migration.TrySendMigrate finished")
 	//
-	c.JSON(200, gin.H{"result": "success"})
+	c.JSON(http.StatusOK, gin.H{"result": "success"})
 }

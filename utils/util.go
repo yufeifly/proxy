@@ -1,9 +1,10 @@
 package utils
 
-import "github.com/gin-gonic/gin"
+import (
+	"github.com/gin-gonic/gin"
+	"net/http"
+)
 
 func ReportErr(c *gin.Context, err error) {
-	c.JSON(200, gin.H{
-		"result": err,
-	})
+	c.JSON(http.StatusOK, gin.H{"result": err})
 }

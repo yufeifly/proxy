@@ -19,6 +19,10 @@ func NewScheduler() *Scheduler {
 	return &Scheduler{}
 }
 
+func Default() *Scheduler {
+	return DefaultScheduler
+}
+
 func (s *Scheduler) AddService(sID string, service *Service) {
 	s.Map.Store(sID, service)
 }
@@ -34,4 +38,13 @@ func (s *Scheduler) GetService(serviceID string) (*Service, error) {
 
 func (s *Scheduler) DeleteService(serviceID string) {
 	s.Map.Delete(serviceID)
+}
+
+func (s *Scheduler) ListService() (services []*Service) {
+	s.Map.Range(func(key, value interface{}) bool {
+		ser, _ := value.(*Service)
+		services = append(services, ser)
+		return true
+	})
+	return
 }

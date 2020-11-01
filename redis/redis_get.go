@@ -8,7 +8,7 @@ import (
 // Get redis get value by key
 func Get(ProxyService string, key string) (string, error) {
 	// get service
-	service, err := scheduler.DefaultScheduler.GetService(ProxyService)
+	service, err := scheduler.Default().GetService(ProxyService)
 	if err != nil {
 		return "", err
 	}

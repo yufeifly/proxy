@@ -29,7 +29,7 @@ func NewService(opts model.ServiceOpts) *Service {
 // PseudoRegister register services
 func PseudoRegister() {
 	opts1 := model.ServiceOpts{
-		ID:             "service.A1",
+		ID:             "service1.1",
 		ProxyServiceID: "service1",
 		NodeAddr: model.Address{
 			IP:   "127.0.0.1",
@@ -39,7 +39,7 @@ func PseudoRegister() {
 	Register("service1", opts1)
 
 	opts2 := model.ServiceOpts{
-		ID:             "service.B1",
+		ID:             "service2.1",
 		ProxyServiceID: "service2",
 		NodeAddr: model.Address{
 			IP:   "127.0.0.1",
