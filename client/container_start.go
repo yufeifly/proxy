@@ -2,6 +2,7 @@ package client
 
 import (
 	"github.com/levigross/grequests"
+	"github.com/sirupsen/logrus"
 	"github.com/yufeifly/proxy/model"
 )
 
@@ -18,6 +19,7 @@ func (cli *Client) ContainerStart(opts model.StartReqOpts) error {
 	url := "http://" + opts.IP + ":" + opts.Port + "/container/start"
 	_, err := grequests.Post(url, ro)
 	if err != nil {
+		logrus.Errorf("client.ContainerStart post err: %v", err)
 		return err
 	}
 	return nil

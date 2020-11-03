@@ -36,7 +36,7 @@ func PseudoRegister() {
 			Port: config.DefaultMigratorListeningPort,
 		},
 	}
-	Register("service1", opts1)
+	DefaultRegister("service1", opts1)
 
 	opts2 := model.ServiceOpts{
 		ID:             "service2.1",
@@ -46,12 +46,12 @@ func PseudoRegister() {
 			Port: config.DefaultMigratorListeningPort,
 		},
 	}
-	Register("service2", opts2)
+	DefaultRegister("service2", opts2)
 }
 
 // Register register a service to DefaultScheduler
-func Register(ProxyService string, opts model.ServiceOpts) {
-	DefaultScheduler.AddService(ProxyService, NewService(opts))
+func DefaultRegister(ProxyService string, opts model.ServiceOpts) {
+	Default().AddService(ProxyService, NewService(opts))
 }
 
 func (s *Service) AddShadow(addr model.Address) {

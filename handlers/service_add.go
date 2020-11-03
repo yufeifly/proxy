@@ -7,23 +7,31 @@ import (
 	"github.com/yufeifly/proxy/model"
 	"github.com/yufeifly/proxy/scheduler"
 	"github.com/yufeifly/proxy/utils"
+	"net/http"
 )
 
+// ServiceAdd handler of adding a redis service
 func ServiceAdd(c *gin.Context) {
-	ProxyService := c.Query("Service3")
-	RawAddress := c.Query("Address")
+	ProxyService := c.Query("Service")
+	RawAddress := c.Query("Address") // address of worker node
 	address, err := utils.ParseAddress(RawAddress)
 	if err != nil {
 		utils.ReportErr(c, err)
 		logrus.Panic(err)
 	}
-	service := scheduler.NewService(model.ServiceOpts{
+	opts := model.ServiceOpts{
 		ID:             utils.NameServiceByProxyService(ProxyService),
 		ProxyServiceID: ProxyService,
 		NodeAddr:       address,
-	})
-	scheduler.Default().AddService(ProxyService, service)
+	}
+
+	scheduler.DefaultRegister(ProxyService, opts)
 	//
 	cli := client.Client{}
-	cli.AddService(service)
+	err = cli.AddService(opts)
+	if err != nil {
+		utils.ReportErr(c, err)
+		logrus.Panic(err)
+	}
+	c.JSON(http.StatusOK, gin.H{"result": "success"})
 }

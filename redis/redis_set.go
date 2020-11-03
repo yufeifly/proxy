@@ -13,7 +13,7 @@ import (
 // Set set kv pair to redis service
 func Set(ProxyService string, key, val string) error {
 	// if get ticket
-	token := ticket.T.GetTicket()
+	token := ticket.Default().Get()
 	if token == ticket.ShutWrite {
 		return cusErr.ErrServiceNotAvailable
 	}

@@ -38,9 +38,9 @@ func TrySendMigrate(reqOpts model.MigrateReqOpts) error {
 	reqOpts.ServiceID = service.ID // of worker
 
 	logrus.Warn("ticket set logging")
-	ticket.T.SetTicket(ticket.Logging)
+	ticket.Default().Set(ticket.Logging)
 
-	started := make(chan bool)
+	started := make(chan bool) // todo change to struct{}{}
 	// send migrate request to src node
 	go func() error {
 		cli := client.Client{}
@@ -80,7 +80,7 @@ FOR:
 			}
 			if sent-consumed < 1 {
 				logrus.Warn("downtime start")
-				ticket.T.SetTicket(ticket.ShutWrite)
+				ticket.Default().Set(ticket.ShutWrite)
 				wal.UnlockLogger()
 				break FOR
 			}
@@ -112,7 +112,7 @@ FOR:
 					Port: reqOpts.Dst.Port,
 				},
 			}
-			scheduler.Register(reqOpts.ProxyService, opts)
+			scheduler.DefaultRegister(reqOpts.ProxyService, opts)
 			logrus.Info("downtime end")
 			break
 		}
@@ -122,7 +122,7 @@ FOR:
 
 	// downtime end, unset global lock
 	logrus.Warn("ticket unset")
-	ticket.T.UnSet()
+	ticket.Default().UnSet()
 
 	return nil
 }

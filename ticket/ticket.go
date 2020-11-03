@@ -5,6 +5,7 @@ import "sync"
 var T *Ticket
 
 const (
+	Normal    = 0
 	Logging   = 1
 	ShutWrite = 2
 )
@@ -25,7 +26,12 @@ func NewTicket() *Ticket {
 	}
 }
 
-func (t *Ticket) GetTicket() int {
+func Default() *Ticket {
+	return T
+}
+
+// Get get value of ticket
+func (t *Ticket) Get() int {
 	var ret int
 	t.rw.RLock()
 	ret = t.token
@@ -33,14 +39,16 @@ func (t *Ticket) GetTicket() int {
 	return ret
 }
 
-func (t *Ticket) SetTicket(v int) {
+// Set set value of ticket
+func (t *Ticket) Set(v int) {
 	t.rw.Lock()
 	t.token = v
 	t.rw.Unlock()
 }
 
+// UnSet restore to normal mode
 func (t *Ticket) UnSet() {
 	t.rw.Lock()
-	t.token = 0
+	t.token = Normal
 	t.rw.Unlock()
 }

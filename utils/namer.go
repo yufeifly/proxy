@@ -6,6 +6,8 @@ import (
 	"strings"
 )
 
+/* RenameService give service a new name,
+useful in migration*/
 func RenameService(oldName string) string {
 	var newName string
 	dot := strings.Index(oldName, ".")
@@ -19,6 +21,7 @@ func adder(tail string) string {
 	return strconv.Itoa(num)
 }
 
+// NameServiceByProxyService give service a name by proxy service
 func NameServiceByProxyService(proxyID string) string {
 	return fmt.Sprintf("%s.1", proxyID)
 }

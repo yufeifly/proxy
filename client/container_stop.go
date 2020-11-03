@@ -2,6 +2,7 @@ package client
 
 import (
 	"github.com/levigross/grequests"
+	"github.com/sirupsen/logrus"
 	"github.com/yufeifly/proxy/model"
 )
 
@@ -16,6 +17,7 @@ func (cli *Client) StopContainer(opts model.StopReqOpts) error {
 	url := "http://" + opts.IP + ":" + opts.Port + "/container/stop"
 	_, err := grequests.Post(url, ro)
 	if err != nil {
+		logrus.Errorf("client.StopContainer post err: %v", err)
 		return err
 	}
 	return nil
