@@ -6,7 +6,7 @@ import (
 )
 
 func InitRoutes(r *gin.Engine) {
-	r.POST("/container/run", handlers.Run)
+	//r.POST("/container/run", handlers)
 	// start a container
 	r.POST("/container/start", handlers.Start)
 	//  list containers

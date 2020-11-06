@@ -15,18 +15,22 @@ type Scheduler struct {
 	Map sync.Map
 }
 
+// NewScheduler new a scheduler
 func NewScheduler() *Scheduler {
 	return &Scheduler{}
 }
 
+// Default get default scheduler
 func Default() *Scheduler {
 	return DefaultScheduler
 }
 
+// AddService add a service to scheduler
 func (s *Scheduler) AddService(sID string, service *Service) {
 	s.Map.Store(sID, service)
 }
 
+// GetService get service from scheduler
 func (s *Scheduler) GetService(serviceID string) (*Service, error) {
 	serviceP, ok := s.Map.Load(serviceID)
 	if !ok {
@@ -40,6 +44,7 @@ func (s *Scheduler) DeleteService(serviceID string) {
 	s.Map.Delete(serviceID)
 }
 
+// ListService list all services of a scheduler
 func (s *Scheduler) ListService() (services []*Service) {
 	s.Map.Range(func(key, value interface{}) bool {
 		ser, _ := value.(*Service)

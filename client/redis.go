@@ -3,18 +3,18 @@ package client
 import (
 	"encoding/json"
 	"github.com/levigross/grequests"
-	"github.com/yufeifly/proxy/scheduler"
+	"github.com/yufeifly/proxy/model"
 )
 
 // RedisGet send get request to worker node
-func (cli *Client) RedisGet(service *scheduler.Service, key string) (string, error) {
+func (cli *Client) RedisGet(opts model.RedisGetOpts) (string, error) {
 	params := make(map[string]string, 2)
-	params["key"] = key
-	params["service"] = service.ID
+	params["key"] = opts.Key
+	params["service"] = opts.ServiceID
 	ro := &grequests.RequestOptions{
 		Params: params,
 	}
-	url := "http://" + service.Node.IP + ":" + service.Node.Port + "/redis/get"
+	url := "http://" + opts.Node.IP + ":" + opts.Node.Port + "/redis/get"
 	resp, err := grequests.Get(url, ro)
 	if err != nil {
 		return "", err
@@ -26,16 +26,16 @@ func (cli *Client) RedisGet(service *scheduler.Service, key string) (string, err
 }
 
 // RedisSet send set request to worker node
-func (cli *Client) RedisSet(service *scheduler.Service, key, val string) error {
+func (cli *Client) RedisSet(opts model.RedisSetOpts) error {
 	data := make(map[string]string, 3)
-	data["key"] = key
-	data["value"] = val
-	data["service"] = service.ID
+	data["key"] = opts.Key
+	data["value"] = opts.Value
+	data["service"] = opts.ServiceID
 
 	ro := &grequests.RequestOptions{
 		Data: data,
 	}
-	url := "http://" + service.Node.IP + ":" + service.Node.Port + "/redis/set"
+	url := "http://" + opts.Node.IP + ":" + opts.Node.Port + "/redis/set"
 	_, err := grequests.Post(url, ro)
 	if err != nil {
 		return err

@@ -1,6 +1,6 @@
 /*
 Q: how to tell the dst consumer goroutine to stop?
-A: via function wal.SendLastLog()
+A: via function service.SendLastLog()
 */
 package migration
 
@@ -11,7 +11,6 @@ import (
 	"github.com/yufeifly/proxy/scheduler"
 	"github.com/yufeifly/proxy/ticket"
 	"github.com/yufeifly/proxy/utils"
-	"github.com/yufeifly/proxy/wal"
 	"time"
 )
 
@@ -65,43 +64,43 @@ FOR:
 		select {
 		case <-started:
 			logrus.Warn("get value from chan(started)")
-			sent, _ := wal.LockAndGetSentConsumed()
+			sent, _ := service.LockAndGetSentConsumed()
 			if sent == 0 {
-				wal.UnlockLogger()
+				service.UnlockLogger()
 				break FOR
 			}
 		case <-ticker.C:
 			logrus.Info("ticker")
-			sent, consumed := wal.LockAndGetSentConsumed()
+			sent, consumed := service.LockAndGetSentConsumed()
 			logrus.Infof("sent: %v, consumed: %v", sent, consumed)
 			if sent == 0 {
-				wal.UnlockLogger()
+				service.UnlockLogger()
 				continue
 			}
 			if sent-consumed < 1 {
 				logrus.Warn("downtime start")
 				ticket.Default().Set(ticket.ShutWrite)
-				wal.UnlockLogger()
+				service.UnlockLogger()
 				break FOR
 			}
-			wal.UnlockLogger()
+			service.UnlockLogger()
 		}
 	}
 
 	// send the last log with flag "true" to dst,
 	// true flag tells dst that this is the last one, so the consumer goroutine can stop
-	err = wal.SendLastLog(reqOpts.ProxyService, addr)
+	err = service.SendLastLog(reqOpts.ProxyService, addr)
 	if err != nil {
-		logrus.Errorf("wal.SendLastLog failed, err: %v", err)
+		logrus.Errorf("service.SendLastLog failed, err: %v", err)
 		return err
 	}
 
 	// wait until the last log consumed by dst
 	for {
 		<-ticker.C
-		sent, consumed := wal.LockAndGetSentConsumed()
+		sent, consumed := service.LockAndGetSentConsumed()
 		if sent == consumed {
-			wal.UnlockLogger()
+			service.UnlockLogger()
 			// switch, requests redirect to dst node
 			logrus.Info("switching, requests redirect to dst node")
 			opts := model.ServiceOpts{
@@ -116,7 +115,7 @@ FOR:
 			logrus.Info("downtime end")
 			break
 		}
-		wal.UnlockLogger()
+		service.UnlockLogger()
 	}
 	ticker.Stop() // shut ticker
 

@@ -10,11 +10,6 @@ type Log struct {
 	LogQueue []string // log container
 }
 
-type LogWithServiceID struct {
-	Log
-	ProxyServiceID string
-}
-
 func NewLog() *Log {
 	return &Log{
 		Last:     false,
@@ -22,9 +17,20 @@ func NewLog() *Log {
 	}
 }
 
+type LogWithServiceID struct {
+	*Log
+	ProxyServiceID string
+}
+
+func NewLogWithServiceID(proxyService string) *LogWithServiceID {
+	return &LogWithServiceID{
+		Log:            NewLog(),
+		ProxyServiceID: proxyService,
+	}
+}
+
 type Logger struct {
-	Log
-	//logQueue  []string // log container
+	*LogWithServiceID
 	Count         int // current log entry count
 	Capacity      int // size of a log page
 	TotalSend     int
@@ -32,24 +38,23 @@ type Logger struct {
 	sync.Mutex
 }
 
-func NewLogger() *Logger {
+func NewLogger(proxyService string) *Logger {
 	return &Logger{
-		Log: Log{
-			Last:     false,
-			LogQueue: []string{},
-		},
-		Count:         0,
-		Capacity:      config.Capacity,
-		TotalSend:     0,
-		TotalConsumed: 0,
-		Mutex:         sync.Mutex{},
+		LogWithServiceID: NewLogWithServiceID(proxyService),
+		Count:            0,
+		Capacity:         config.Capacity,
+		TotalSend:        0,
+		TotalConsumed:    0,
+		Mutex:            sync.Mutex{},
 	}
 }
 
+// ClearQueue clear data queue of the queue
 func (l *Logger) ClearQueue() {
-	l.LogQueue = []string{}
+	l.LogQueue = l.LogQueue[:0]
 }
 
+// SetLastFlag set last flag of the log, which means logging will end
 func (l *Logger) SetLastFlag() {
 	l.Last = true
 }
