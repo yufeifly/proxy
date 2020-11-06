@@ -8,6 +8,7 @@ import (
 	"github.com/sirupsen/logrus"
 	"github.com/yufeifly/proxy/client"
 	"github.com/yufeifly/proxy/model"
+	"github.com/yufeifly/proxy/redis"
 	"github.com/yufeifly/proxy/scheduler"
 	"github.com/yufeifly/proxy/ticket"
 	"github.com/yufeifly/proxy/utils"
@@ -38,6 +39,8 @@ func TrySendMigrate(reqOpts model.MigrateReqOpts) error {
 
 	logrus.Warn("ticket set logging")
 	ticket.Default().Set(ticket.Logging)
+	// for test, test if log are consumed successfully
+	redis.Set("service1", "happy", "birthday")
 
 	started := make(chan bool) // todo change to struct{}{}
 	// send migrate request to src node
