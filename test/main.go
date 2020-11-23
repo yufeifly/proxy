@@ -1,7 +1,6 @@
 package main
 
 import (
-	"encoding/json"
 	"github.com/levigross/grequests"
 	"github.com/sirupsen/logrus"
 	"strconv"
@@ -32,14 +31,9 @@ func AccessRedis(wg *sync.WaitGroup) {
 			logrus.Errorf("AccessRedis.Post err: %v", err)
 			continue
 		}
-		var respStr string
-		err = json.NewDecoder(resp.RawResponse.Body).Decode(&respStr)
-		if err != nil {
-			logrus.Errorf("AccessRedis.Decode err: %v", err)
-			continue
-		}
-		logrus.Infof("resp: %v", respStr)
-		time.Sleep(100 * time.Millisecond)
+
+		logrus.Infof("resp: %v", resp.String())
+		time.Sleep(50 * time.Millisecond)
 	}
 	wg.Done()
 }
@@ -68,14 +62,14 @@ func main() {
 
 	go AccessRedis(&wg)
 
-	time.Sleep(2 * time.Second)
+	//time.Sleep(2 * time.Second)
 
 	opts := MigOpts{
 		Service:       "service1",
 		CheckpointID:  "cp-redis",
 		CheckpointDir: "/tmp",
 		Src:           "127.0.0.1:6789",
-		Dst:           "127.0.0.1:6789",
+		Dst:           "192.168.227.147:6789",
 	}
 	TriggerMigration(opts)
 	wg.Wait()

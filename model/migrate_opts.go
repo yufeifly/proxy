@@ -1,8 +1,8 @@
 package model
 
 type MigrateReqOpts struct {
-	Src Address
-	Dst Address
+	Src Address // migration src
+	Dst Address // migration destination
 	//Container     string
 	ServiceID     string // of worker
 	ProxyService  string

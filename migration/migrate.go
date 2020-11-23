@@ -7,8 +7,8 @@ package migration
 import (
 	"github.com/sirupsen/logrus"
 	"github.com/yufeifly/proxy/client"
+	"github.com/yufeifly/proxy/config"
 	"github.com/yufeifly/proxy/model"
-	"github.com/yufeifly/proxy/redis"
 	"github.com/yufeifly/proxy/scheduler"
 	"github.com/yufeifly/proxy/ticket"
 	"github.com/yufeifly/proxy/utils"
@@ -19,8 +19,8 @@ import (
 func TrySendMigrate(reqOpts model.MigrateReqOpts) error {
 	// todo select a dst node
 	if reqOpts.Dst.IP == "" || reqOpts.Dst.Port == "" {
-		reqOpts.Src.IP = "127.0.0.1"
-		reqOpts.Src.Port = "6789"
+		reqOpts.Dst.IP = "192.168.227.147"
+		reqOpts.Dst.Port = config.DefaultMigratorListeningPort
 	}
 
 	// add service.Shadow first, start logging second!
@@ -37,10 +37,9 @@ func TrySendMigrate(reqOpts model.MigrateReqOpts) error {
 	service.AddShadow(addr)
 	reqOpts.ServiceID = service.ID // of worker
 
-	logrus.Warn("ticket set logging")
 	ticket.Default().Set(ticket.Logging)
 	// for test, test if log are consumed successfully
-	redis.Set("service1", "happy", "birthday")
+	// redis.Set("service1", "happy", "birthday")
 
 	started := make(chan bool) // todo change to struct{}{}
 	// send migrate request to src node
@@ -69,11 +68,13 @@ FOR:
 			logrus.Warn("get value from chan(started)")
 			sent, _ := service.LockAndGetSentConsumed()
 			if sent == 0 {
+				logrus.Info("log sent is 0, about to sent last log")
 				service.UnlockLogger()
 				break FOR
 			}
+			service.UnlockLogger()
 		case <-ticker.C:
-			logrus.Info("ticker")
+			logrus.Info("tick")
 			sent, consumed := service.LockAndGetSentConsumed()
 			logrus.Infof("sent: %v, consumed: %v", sent, consumed)
 			if sent == 0 {

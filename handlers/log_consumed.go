@@ -19,5 +19,6 @@ func LogConsumedAdder(c *gin.Context) {
 		logrus.Panic(err)
 	}
 	proxyService.ConsumedAdder()
+	logrus.Info("LogConsumedAdder finish")
 	c.JSON(http.StatusOK, gin.H{"result": "success"})
 }
