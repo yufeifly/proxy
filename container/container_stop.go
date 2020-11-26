@@ -6,7 +6,9 @@ import (
 )
 
 func StopContainer(opts model.StopReqOpts) error {
-	cli := client.Client{}
+	cli := client.Client{
+		Target: opts.Address,
+	}
 	err := cli.StopContainer(opts)
 	if err != nil {
 		return err

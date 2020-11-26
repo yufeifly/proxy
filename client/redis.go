@@ -14,7 +14,7 @@ func (cli *Client) RedisGet(opts model.RedisGetOpts) (string, error) {
 	ro := &grequests.RequestOptions{
 		Params: params,
 	}
-	url := "http://" + opts.Node.IP + ":" + opts.Node.Port + "/redis/get"
+	url := cli.getAPIPath("/redis/get")
 	resp, err := grequests.Get(url, ro)
 	if err != nil {
 		return "", err
@@ -35,7 +35,7 @@ func (cli *Client) RedisSet(opts model.RedisSetOpts) error {
 	ro := &grequests.RequestOptions{
 		Data: data,
 	}
-	url := "http://" + opts.Node.IP + ":" + opts.Node.Port + "/redis/set"
+	url := cli.getAPIPath("/redis/set")
 	_, err := grequests.Post(url, ro)
 	if err != nil {
 		return err

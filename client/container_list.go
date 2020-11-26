@@ -19,7 +19,7 @@ func (cli *Client) ContainerList(opts model.ListReqOpts) ([]types.Container, err
 	ro := &grequests.RequestOptions{
 		JSON: listOptsJson,
 	}
-	url := "http://" + opts.IP + ":" + opts.Port + "/container/list"
+	url := cli.getAPIPath("/container/list")
 	resp, err := grequests.Get(url, ro)
 	if err != nil {
 		return nil, err

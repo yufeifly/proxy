@@ -9,6 +9,7 @@ type Client struct {
 	Target model.Address
 }
 
-func (cli *Client) getAPIPath(ip, port, path string) string {
-	return fmt.Sprintf("http://%s:%s%s", ip, port, path)
+// getAPIPath path means webapi path, for example: /redis/set
+func (cli *Client) getAPIPath(path string) string {
+	return fmt.Sprintf("http://%s:%s%s", cli.Target.IP, cli.Target.Port, path)
 }

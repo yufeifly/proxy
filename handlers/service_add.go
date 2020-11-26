@@ -27,7 +27,9 @@ func ServiceAdd(c *gin.Context) {
 
 	scheduler.DefaultRegister(ProxyService, opts)
 	//
-	cli := client.Client{}
+	cli := client.Client{
+		Target: opts.NodeAddr,
+	}
 	err = cli.AddService(opts)
 	if err != nil {
 		utils.ReportErr(c, err)

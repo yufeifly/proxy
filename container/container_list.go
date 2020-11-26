@@ -10,7 +10,9 @@ import (
 // ListContainers list containers of a worker node
 func ListContainers(opts model.ListReqOpts) ([]types.Container, error) {
 	header := "container.ListContainers"
-	cli := client.Client{}
+	cli := client.Client{
+		Target: opts.Address,
+	}
 	containers, err := cli.ContainerList(opts)
 	if err != nil {
 		logrus.Errorf("%s, cli.ContainerList err: %v", header, err)

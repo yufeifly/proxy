@@ -22,7 +22,7 @@ func (cli *Client) SendLog(logWithID model.LogWithServiceID) error {
 
 	//url := "http://127.0.0.1:6789/logger"
 	//url := "http://" + cli.Target.IP + ":" + cli.Target.Port + "/logger"
-	url := cli.getAPIPath(cli.Target.IP, cli.Target.Port, "/logger")
+	url := cli.getAPIPath("/logger")
 	resp, err := grequests.Post(url, ro)
 	if err != nil {
 		logrus.Errorf("client.SendLog Post failed, err: %v", err)

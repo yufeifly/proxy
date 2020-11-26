@@ -14,7 +14,7 @@ func (cli *Client) StopContainer(opts model.StopReqOpts) error {
 	ro := &grequests.RequestOptions{
 		Data: data,
 	}
-	url := "http://" + opts.IP + ":" + opts.Port + "/container/stop"
+	url := cli.getAPIPath("/container/stop")
 	_, err := grequests.Post(url, ro)
 	if err != nil {
 		logrus.Errorf("client.StopContainer post err: %v", err)

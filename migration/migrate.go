@@ -46,17 +46,17 @@ func TrySendMigrate(reqOpts model.MigrateReqOpts) error {
 
 	started := make(chan bool) // todo change to struct{}{}
 	// send migrate request to src node
-	go func() error {
-		cli := client.Client{}
+	go func() {
+		cli := client.Client{
+			Target: reqOpts.Src,
+		}
 		err := cli.SendMigrate(reqOpts)
 		if err != nil {
-			logrus.Errorf("cli.SendMigrate failed, err: %v", err)
-			return err
+			logrus.Panicf("cli.SendMigrate failed, err: %v", err)
 		}
 		logrus.Debug("container dst started")
 		started <- true
 		logrus.Debug("container dst started, true write to chan")
-		return nil
 	}()
 
 	// write log files to dst

@@ -7,7 +7,9 @@ import (
 
 // StartContainer start a container with opts
 func StartContainer(opts model.StartReqOpts) error {
-	cli := client.Client{}
+	cli := client.Client{
+		Target: opts.Address,
+	}
 	err := cli.ContainerStart(opts)
 	if err != nil {
 		return err

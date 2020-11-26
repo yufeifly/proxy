@@ -13,7 +13,7 @@ func (cli *Client) AddService(service model.ServiceOpts) error {
 	ro := &grequests.RequestOptions{
 		Data: data,
 	}
-	url := "http://" + service.NodeAddr.IP + ":" + service.NodeAddr.Port + "/service/add"
+	url := cli.getAPIPath("/service/add")
 	resp, err := grequests.Post(url, ro)
 	if err != nil {
 		logrus.Errorf("AddService.post err : %v", err)

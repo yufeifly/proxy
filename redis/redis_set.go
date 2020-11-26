@@ -26,7 +26,11 @@ func Set(ProxyService string, key, val string) error {
 	}
 	// if ticket == Logging, log it
 	if token == ticket.Logging {
-		logRecord(service, key, val)
+		err := logRecord(service, key, val)
+		if err != nil {
+			logrus.Errorf("redis.Set logRecord failed, err: %v", err)
+			return err
+		}
 	}
 	// send set request
 	opts := model.RedisSetOpts{
@@ -35,7 +39,9 @@ func Set(ProxyService string, key, val string) error {
 		ServiceID: service.ID,
 		Node:      service.Node,
 	}
-	cli := client.Client{}
+	cli := client.Client{
+		Target: opts.Node,
+	}
 	err = cli.RedisSet(opts)
 	if err != nil {
 		return err

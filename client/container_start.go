@@ -16,7 +16,7 @@ func (cli *Client) ContainerStart(opts model.StartReqOpts) error {
 	ro := &grequests.RequestOptions{
 		Data: data,
 	}
-	url := "http://" + opts.IP + ":" + opts.Port + "/container/start"
+	url := cli.getAPIPath("/container/start")
 	_, err := grequests.Post(url, ro)
 	if err != nil {
 		logrus.Errorf("client.ContainerStart post err: %v", err)
