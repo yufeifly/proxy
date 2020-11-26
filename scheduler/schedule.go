@@ -20,7 +20,7 @@ func NewScheduler() *Scheduler {
 	return &Scheduler{}
 }
 
-// Default get default scheduler
+// Default default scheduler
 func Default() *Scheduler {
 	return DefaultScheduler
 }

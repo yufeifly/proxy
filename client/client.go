@@ -1,7 +1,14 @@
 package client
 
-import "github.com/yufeifly/proxy/model"
+import (
+	"fmt"
+	"github.com/yufeifly/proxy/model"
+)
 
 type Client struct {
-	Dest model.Address
+	Target model.Address
+}
+
+func (cli *Client) getAPIPath(ip, port, path string) string {
+	return fmt.Sprintf("http://%s:%s%s", ip, port, path)
 }

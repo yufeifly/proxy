@@ -10,12 +10,13 @@ import (
 
 // Get redis get
 func Get(c *gin.Context) {
-	header := "redis.Get"
+	header := "handlers.Get"
 	// get params
-	key := c.Query("key")
 	ProxyService := c.Query("service")
+	key := c.Query("key")
+
 	// verify params
-	if key == "" || ProxyService == "" {
+	if ProxyService == "" || key == "" {
 		logrus.Errorf("%s, err: %v", header, cusErr.ErrBadParams)
 		c.JSON(http.StatusBadRequest, gin.H{"failed: ": cusErr.ErrBadParams.Error()})
 		return
@@ -33,25 +34,25 @@ func Get(c *gin.Context) {
 
 // Set redis set
 func Set(c *gin.Context) {
-	header := "redis.Set"
 	// get params
+	ProxyService := c.PostForm("service")
 	key := c.PostForm("key")
 	value := c.PostForm("value")
-	ProxyService := c.PostForm("service")
+
 	// verify params
-	if key == "" || value == "" || ProxyService == "" {
-		logrus.Errorf("%s, err: %v", header, cusErr.ErrBadParams)
+	if ProxyService == "" || key == "" || value == "" {
+		logrus.Errorf("handlers.Set, err: %v", cusErr.ErrBadParams)
 		c.JSON(http.StatusBadRequest, gin.H{"failed: ": cusErr.ErrBadParams.Error()})
 		return
 	}
-	//
+	// do set
 	err := redis.Set(ProxyService, key, value)
 	if err != nil {
 		logrus.WithFields(logrus.Fields{
 			"key":   key,
 			"value": value,
 		}).Error("set pair failed")
-		c.JSON(http.StatusOK, gin.H{"failed: ": err.Error()})
+		c.JSON(http.StatusInternalServerError, gin.H{"failed: ": err.Error()})
 		return
 	}
 	c.JSON(http.StatusOK, gin.H{"result": "success"})

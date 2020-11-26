@@ -28,7 +28,7 @@ func (cli *Client) SendMigrate(opts model.MigrateReqOpts) error {
 	//example url := "http://127.0.0.1:6789/container/migrate"
 	url := "http://" + opts.Src.IP + ":" + opts.Src.Port + "/container/migrate"
 	_, err = grequests.Post(url, ro)
-	logrus.Warn("SendMigrate finished")
+	logrus.Debug("SendMigrate finished")
 	if err != nil {
 		return err
 	}

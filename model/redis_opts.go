@@ -7,7 +7,8 @@ type RedisGetOpts struct {
 }
 
 type RedisSetOpts struct {
-	Key, Value string
-	ServiceID  string
-	Node       Address
+	Key       string
+	Value     string
+	ServiceID string
+	Node      Address
 }

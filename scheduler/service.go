@@ -11,7 +11,7 @@ type Service struct {
 	ID             string // service id
 	ProxyServiceID string
 	Node           model.Address // the node that service exists
-	Shadow         model.Address // node that may replace the origin node, useful in migration
+	MigTarget      model.Address // node that may replace the origin node, useful in migration
 	logger         *model.Logger
 }
 
@@ -25,7 +25,7 @@ func NewService(opts model.ServiceOpts) *Service {
 		ID:             opts.ID,
 		ProxyServiceID: opts.ProxyServiceID,
 		Node:           opts.NodeAddr,
-		Shadow:         model.Address{},
+		MigTarget:      model.Address{},
 		logger:         model.NewLogger(opts.ProxyServiceID),
 	}
 }
@@ -36,7 +36,7 @@ func PseudoRegister() {
 		ID:             "service1.1",
 		ProxyServiceID: "service1",
 		NodeAddr: model.Address{
-			IP:   "127.0.0.1",
+			IP:   "192.168.227.144", // localhost
 			Port: config.DefaultMigratorListeningPort,
 		},
 	}
@@ -46,7 +46,7 @@ func PseudoRegister() {
 		ID:             "service2.1",
 		ProxyServiceID: "service2",
 		NodeAddr: model.Address{
-			IP:   "127.0.0.1",
+			IP:   "192.168.227.144", // localhost
 			Port: config.DefaultMigratorListeningPort,
 		},
 	}
@@ -58,42 +58,44 @@ func DefaultRegister(ProxyService string, opts model.ServiceOpts) {
 	Default().AddService(ProxyService, NewService(opts))
 }
 
-func (s *Service) AddShadow(addr model.Address) {
-	s.Shadow.IP = addr.IP
-	s.Shadow.Port = addr.Port
+func (s *Service) AddMigTarget(addr model.Address) {
+	s.MigTarget.IP = addr.IP
+	s.MigTarget.Port = addr.Port
 }
 
 /* DataLog log data to logger of the service.
 if data size exceeds the logger capacity, send log to dst node */
-func (s *Service) DataLog(ser *Service, data string) error {
+func (s *Service) LogDataInJson(data string) error {
 	s.logger.Lock()
+	defer s.logger.Unlock()
 	s.logger.Count++
 	s.logger.LogQueue = append(s.logger.LogQueue, data)
 
 	if s.logger.Count == s.logger.Capacity {
 		// todo send to dst by goroutine
 		cli := client.Client{
-			Dest: ser.Shadow,
+			Target: s.MigTarget,
 		}
 		logWithID := model.LogWithServiceID{
 			Log:            s.logger.Log,
-			ProxyServiceID: ser.ProxyServiceID,
+			ProxyServiceID: s.ProxyServiceID,
 		}
-		cli.SendLog(logWithID)
+		err := cli.SendLog(logWithID)
+		if err != nil {
+			logrus.Errorf("scheduler.LogDataInJson SendLog failed, err: %v", err)
+			return err
+		}
 		s.logger.TotalSend++
 		s.logger.ClearQueue()
 		s.logger.Count = 0
 	}
-	s.logger.Unlock()
 	return nil
 }
 
 // LockAndGetSentConsumed return sent and consumed
 func (s *Service) LockAndGetSentConsumed() (int, int) {
 	s.logger.Lock()
-	sent := s.logger.TotalSend
-	consumed := s.logger.TotalConsumed
-	return sent, consumed
+	return s.logger.TotalSend, s.logger.TotalConsumed
 }
 
 func (s *Service) UnlockLogger() {
@@ -101,10 +103,10 @@ func (s *Service) UnlockLogger() {
 }
 
 // SendLastLog send the last log to dst
-func (s *Service) SendLastLog(ProxyServiceID string, addr model.Address) error {
+func (s *Service) SendLastLog() error {
 	logrus.Info("send the last log")
 	cli := client.Client{
-		Dest: addr,
+		Target: s.MigTarget,
 	}
 
 	s.logger.Lock()
@@ -113,14 +115,14 @@ func (s *Service) SendLastLog(ProxyServiceID string, addr model.Address) error {
 	s.logger.SetLastFlag()
 	logWithID := model.LogWithServiceID{
 		Log:            s.logger.Log,
-		ProxyServiceID: ProxyServiceID,
+		ProxyServiceID: s.ProxyServiceID,
 	}
 	err := cli.SendLog(logWithID)
 	if err != nil {
 		return err
 	}
 
-	logrus.Infof("SetLastLog finished, ProxyServiceID: %v", ProxyServiceID)
+	logrus.Infof("SetLastLog finished, ProxyServiceID: %v", s.ProxyServiceID)
 	return nil
 }
 

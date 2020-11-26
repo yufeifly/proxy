@@ -62,7 +62,8 @@ func main() {
 
 	go AccessRedis(&wg)
 
-	//time.Sleep(2 * time.Second)
+	// sleep for a while, then migrate it
+	time.Sleep(1 * time.Second)
 
 	opts := MigOpts{
 		Service:       "service1",

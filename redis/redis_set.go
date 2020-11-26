@@ -12,8 +12,9 @@ import (
 
 // Set set kv pair to redis service
 func Set(ProxyService string, key, val string) error {
-	// if get ticket
+
 	token := ticket.Default().Get()
+	// if ticket == ShutWrite
 	if token == ticket.ShutWrite {
 		return cusErr.ErrServiceNotAvailable
 	}
@@ -23,8 +24,9 @@ func Set(ProxyService string, key, val string) error {
 		logrus.Errorf("GetService failed, err: %v", err)
 		return err
 	}
+	// if ticket == Logging, log it
 	if token == ticket.Logging {
-		writeLog(service, key, val)
+		logRecord(service, key, val)
 	}
 	// send set request
 	opts := model.RedisSetOpts{
@@ -41,11 +43,14 @@ func Set(ProxyService string, key, val string) error {
 	return nil
 }
 
-//
-func writeLog(service *scheduler.Service, key, val string) error {
-	logrus.Warn("operation send to message queue")
-	str := []string{key, val}
-	strJson, _ := json.Marshal(str)
-	err := service.DataLog(service, string(strJson))
+// logRecord logs a record
+func logRecord(service *scheduler.Service, key, val string) error {
+	logrus.Warn("logging operation")
+	kv := []string{key, val}
+	kvJson, err := json.Marshal(kv)
+	if err != nil {
+		return err
+	}
+	err = service.LogDataInJson(string(kvJson))
 	return err
 }

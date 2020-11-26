@@ -8,6 +8,7 @@ import (
 	"github.com/yufeifly/proxy/api/server/router/service"
 )
 
+// InitRoutes init all the routers
 func InitRoutes() *gin.Engine {
 	//gin.SetMode(gin.ReleaseMode)
 	r := gin.Default()

@@ -7,8 +7,8 @@ package migration
 import (
 	"github.com/sirupsen/logrus"
 	"github.com/yufeifly/proxy/client"
-	"github.com/yufeifly/proxy/config"
 	"github.com/yufeifly/proxy/model"
+	"github.com/yufeifly/proxy/nodeSelector"
 	"github.com/yufeifly/proxy/scheduler"
 	"github.com/yufeifly/proxy/ticket"
 	"github.com/yufeifly/proxy/utils"
@@ -17,27 +17,30 @@ import (
 
 // TryMigrate migrate redis service
 func TrySendMigrate(reqOpts model.MigrateReqOpts) error {
-	// todo select a dst node
+	// select an appropriate dst node
 	if reqOpts.Dst.IP == "" || reqOpts.Dst.Port == "" {
-		reqOpts.Dst.IP = "192.168.227.147"
-		reqOpts.Dst.Port = config.DefaultMigratorListeningPort
+		node := nodeSelector.BestTarget()
+		reqOpts.Dst = node.Address
 	}
 
-	// add service.Shadow first, start logging second!
+	// add service.MigrationTarget first, start logging second!
 	service, err := scheduler.Default().GetService(reqOpts.ProxyService)
 	if err != nil {
-		logrus.Errorf("scheduler.GetService err: %v", err)
+		logrus.Errorf("migration.TrySendMigrate GetService failed, err: %v", err)
 		return err
 	}
-	logrus.Infof("TrySendMigrate.service: %v", service)
+	logrus.Debugf("migration.TrySendMigrate service: %v", service)
+
 	addr := model.Address{
 		IP:   reqOpts.Dst.IP,
 		Port: reqOpts.Dst.Port,
 	}
-	service.AddShadow(addr)
+	service.AddMigTarget(addr)
+
 	reqOpts.ServiceID = service.ID // of worker
 
 	ticket.Default().Set(ticket.Logging)
+
 	// for test, test if log are consumed successfully
 	// redis.Set("service1", "happy", "birthday")
 
@@ -50,9 +53,9 @@ func TrySendMigrate(reqOpts model.MigrateReqOpts) error {
 			logrus.Errorf("cli.SendMigrate failed, err: %v", err)
 			return err
 		}
-		logrus.Warn("container dst started")
+		logrus.Debug("container dst started")
 		started <- true
-		logrus.Warn("container dst started, true write to chan")
+		logrus.Debug("container dst started, true write to chan")
 		return nil
 	}()
 
@@ -60,23 +63,23 @@ func TrySendMigrate(reqOpts model.MigrateReqOpts) error {
 	// when dst starts, open redis connection
 	// dst consume logs in the meantime
 	// wait until all log files consumed(no whole log file)
-	ticker := time.NewTicker(500 * time.Millisecond)
+	ticker := time.NewTicker(50 * time.Millisecond)
 FOR:
 	for {
 		select {
 		case <-started:
-			logrus.Warn("get value from chan(started)")
+			logrus.Debug("get value from chan(started)")
 			sent, _ := service.LockAndGetSentConsumed()
 			if sent == 0 {
-				logrus.Info("log sent is 0, about to sent last log")
+				logrus.Debug("log sent is 0, about to sent last log")
 				service.UnlockLogger()
 				break FOR
 			}
 			service.UnlockLogger()
 		case <-ticker.C:
-			logrus.Info("tick")
+			//logrus.Info("tick")
 			sent, consumed := service.LockAndGetSentConsumed()
-			logrus.Infof("sent: %v, consumed: %v", sent, consumed)
+			//logrus.Infof("sent: %v, consumed: %v", sent, consumed)
 			if sent == 0 {
 				service.UnlockLogger()
 				continue
@@ -93,9 +96,9 @@ FOR:
 
 	// send the last log with flag "true" to dst,
 	// true flag tells dst that this is the last one, so the consumer goroutine can stop
-	err = service.SendLastLog(reqOpts.ProxyService, addr)
+	err = service.SendLastLog()
 	if err != nil {
-		logrus.Errorf("service.SendLastLog failed, err: %v", err)
+		logrus.Errorf("migration service.SendLastLog failed, err: %v", err)
 		return err
 	}
 
@@ -105,8 +108,7 @@ FOR:
 		sent, consumed := service.LockAndGetSentConsumed()
 		if sent == consumed {
 			service.UnlockLogger()
-			// switch, requests redirect to dst node
-			logrus.Info("switching, requests redirect to dst node")
+			logrus.Debug("switching, requests redirect to dst node")
 			opts := model.ServiceOpts{
 				ID:             utils.RenameService(reqOpts.ServiceID),
 				ProxyServiceID: reqOpts.ProxyService,
@@ -116,7 +118,7 @@ FOR:
 				},
 			}
 			scheduler.DefaultRegister(reqOpts.ProxyService, opts)
-			logrus.Info("downtime end")
+			logrus.Warn("downtime end")
 			break
 		}
 		service.UnlockLogger()
@@ -124,7 +126,7 @@ FOR:
 	ticker.Stop() // shut ticker
 
 	// downtime end, unset global lock
-	logrus.Warn("ticket unset")
+	logrus.Debug("ticket unset")
 	ticket.Default().UnSet()
 
 	return nil

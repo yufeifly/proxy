@@ -26,6 +26,7 @@ func NewTicket() *Ticket {
 	}
 }
 
+// Default default ticket
 func Default() *Ticket {
 	return T
 }
