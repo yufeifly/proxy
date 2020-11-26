@@ -16,6 +16,25 @@ type MigOpts struct {
 	Dst           string
 }
 
+func prepareOldFolks() {
+	for i := 0; i < 1000; i++ {
+		data := make(map[string]string, 3)
+		data["key"] = "oldkey" + strconv.Itoa(i)
+		data["value"] = "oldvalue" + strconv.Itoa(i)
+		data["service"] = "service1"
+		ro := grequests.RequestOptions{
+			Data: data,
+		}
+		url := "http://127.0.0.1:6788/redis/set"
+		_, err := grequests.Post(url, &ro)
+		if err != nil {
+			logrus.Errorf("prepareOldFolks AccessRedis.Post err: %v", err)
+			continue
+		}
+		time.Sleep(20 * time.Millisecond)
+	}
+}
+
 func AccessRedis(wg *sync.WaitGroup) {
 	for i := 0; i < 500; i++ {
 		data := make(map[string]string, 3)
@@ -59,7 +78,9 @@ func TriggerMigration(opts MigOpts) {
 func main() {
 	wg := sync.WaitGroup{}
 	wg.Add(1)
-
+	// fill the redis service container with some kv data
+	prepareOldFolks()
+	// start accessing the redis service, imitate the real-world accesses
 	go AccessRedis(&wg)
 
 	// sleep for a while, then migrate it
