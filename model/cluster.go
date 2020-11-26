@@ -8,3 +8,11 @@ type Cluster struct {
 type Node struct {
 	Address
 }
+
+func (c *Cluster) GetProxy() Node {
+	return c.Master
+}
+
+func (c *Cluster) GetWorkers() []Node {
+	return c.Worker
+}
