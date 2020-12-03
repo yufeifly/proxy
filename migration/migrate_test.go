@@ -6,7 +6,7 @@ import (
 	"testing"
 )
 
-func TestTrySendMigrate(t *testing.T) {
+func TestTryMigrateWithLogging(t *testing.T) {
 	reqOpts := model.MigrateReqOpts{
 		Src: model.Address{
 			IP:   "127.0.0.1",
@@ -21,9 +21,9 @@ func TestTrySendMigrate(t *testing.T) {
 		CheckpointID:  "cp-redis",
 		CheckpointDir: "/tmp",
 	}
-	err := TrySendMigrate(reqOpts)
+	err := TryMigrateWithLogging(reqOpts)
 	if err != nil {
-		t.Errorf("TrySendMigrate failed, err : %v", err)
+		t.Errorf("TryMigrateWithLogging failed, err : %v", err)
 	} else {
 		fmt.Println("pass")
 	}

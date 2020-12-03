@@ -16,29 +16,10 @@ type MigOpts struct {
 	Dst           string
 }
 
-func prepareOldFolks() {
-	for i := 0; i < 1000; i++ {
-		data := make(map[string]string, 3)
-		data["key"] = "oldkey" + strconv.Itoa(i)
-		data["value"] = "oldvalue" + strconv.Itoa(i)
-		data["service"] = "service1"
-		ro := grequests.RequestOptions{
-			Data: data,
-		}
-		url := "http://127.0.0.1:6788/redis/set"
-		_, err := grequests.Post(url, &ro)
-		if err != nil {
-			logrus.Errorf("prepareOldFolks AccessRedis.Post err: %v", err)
-			continue
-		}
-		time.Sleep(20 * time.Millisecond)
-	}
-}
-
 func AccessRedis(wg *sync.WaitGroup) {
 	for i := 0; i < 500; i++ {
 		data := make(map[string]string, 3)
-		data["key"] = "key" + strconv.Itoa(i)
+		data["key"] = "name" + strconv.Itoa(i)
 		data["value"] = "value" + strconv.Itoa(i)
 		data["service"] = "service1"
 		ro := grequests.RequestOptions{
@@ -51,7 +32,7 @@ func AccessRedis(wg *sync.WaitGroup) {
 			continue
 		}
 
-		logrus.Infof("resp: %v", resp.String())
+		logrus.Infof("i: %d, resp: %v", i, resp.String())
 		time.Sleep(50 * time.Millisecond)
 	}
 	wg.Done()
@@ -67,7 +48,7 @@ func TriggerMigration(opts MigOpts) {
 	ro := grequests.RequestOptions{
 		Data: data,
 	}
-	url := "http://127.0.0.1:6788/container/migrate"
+	url := "http://127.0.0.1:6788/service/migrate"
 	resp, err := grequests.Post(url, &ro)
 	if err != nil {
 		logrus.Errorf("TriggerMigration err: %v", err)
@@ -78,13 +59,11 @@ func TriggerMigration(opts MigOpts) {
 func main() {
 	wg := sync.WaitGroup{}
 	wg.Add(1)
-	// fill the redis service container with some kv data
-	prepareOldFolks()
 	// start accessing the redis service, imitate the real-world accesses
 	go AccessRedis(&wg)
 
 	// sleep for a while, then migrate it
-	time.Sleep(1 * time.Second)
+	time.Sleep(2 * time.Second)
 
 	opts := MigOpts{
 		Service:       "service1",

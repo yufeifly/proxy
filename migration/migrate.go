@@ -16,7 +16,7 @@ import (
 )
 
 // TryMigrate migrate redis service
-func TrySendMigrate(reqOpts model.MigrateReqOpts) error {
+func TryMigrateWithLogging(reqOpts model.MigrateReqOpts) error {
 	// select an appropriate dst node
 	if reqOpts.Dst.IP == "" || reqOpts.Dst.Port == "" {
 		node := nodeSelector.BestTarget()
@@ -26,10 +26,10 @@ func TrySendMigrate(reqOpts model.MigrateReqOpts) error {
 	// add service.MigrationTarget first, start logging second!
 	service, err := scheduler.Default().GetService(reqOpts.ProxyService)
 	if err != nil {
-		logrus.Errorf("migration.TrySendMigrate GetService failed, err: %v", err)
+		logrus.Errorf("migration.TryMigrateWithLogging GetService failed, err: %v", err)
 		return err
 	}
-	logrus.Debugf("migration.TrySendMigrate service: %v", service)
+	logrus.Debugf("migration.TryMigrateWithLogging service: %v", service)
 
 	addr := model.Address{
 		IP:   reqOpts.Dst.IP,
@@ -63,7 +63,7 @@ func TrySendMigrate(reqOpts model.MigrateReqOpts) error {
 	// when dst starts, open redis connection
 	// dst consume logs in the meantime
 	// wait until all log files consumed(no whole log file)
-	ticker := time.NewTicker(50 * time.Millisecond)
+	ticker := time.NewTicker(10 * time.Millisecond)
 FOR:
 	for {
 		select {
@@ -124,6 +124,31 @@ FOR:
 		service.UnlockLogger()
 	}
 	ticker.Stop() // shut ticker
+
+	// downtime end, unset global lock
+	logrus.Debug("ticket unset")
+	ticket.Default().UnSet()
+
+	return nil
+}
+
+// TryMigrate migrate regular containers
+func TryMigrate(reqOpts model.MigrateReqOpts) error {
+	// select an appropriate dst node
+	if reqOpts.Dst.IP == "" || reqOpts.Dst.Port == "" {
+		node := nodeSelector.BestTarget()
+		reqOpts.Dst = node.Address
+	}
+
+	// send migrate request to src node
+
+	cli := client.Client{
+		Target: reqOpts.Src,
+	}
+	err := cli.SendMigrate(reqOpts)
+	if err != nil {
+		logrus.Panicf("cli.SendMigrate failed, err: %v", err)
+	}
 
 	// downtime end, unset global lock
 	logrus.Debug("ticket unset")

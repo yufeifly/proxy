@@ -1,6 +1,3 @@
-/*
-proxy container migrate --src=<ip:port> --container=<> [--checkpoint=<> --checkpoint-dir==<>] --dst=<ip:port>
-*/
 package handlers
 
 import (
@@ -12,9 +9,7 @@ import (
 	"net/http"
 )
 
-// MigrateContainer handler for redirecting request of migrating container
-func MigrateContainer(c *gin.Context) {
-
+func MigrateService(c *gin.Context) {
 	ProxyService := c.PostForm("Service") // of proxy
 	CheckpointID := c.PostForm("CheckpointID")
 	CheckpointDir := c.PostForm("CheckpointDir")
