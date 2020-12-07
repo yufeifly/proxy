@@ -10,14 +10,14 @@ import (
 
 // ContainerList send request to target node to get the containers's info
 func (cli *Client) ContainerList(opts model.ListReqOpts) ([]types.Container, error) {
-	listOptsJson, err := json.Marshal(opts.ContainerListOptions)
+	listOptsJSON, err := json.Marshal(opts.ContainerListOptions)
 	if err != nil {
 		logrus.Errorf("client.ContainerList Marshal failed, err : %v", err)
 		return nil, err
 	}
 
 	ro := &grequests.RequestOptions{
-		JSON: listOptsJson,
+		JSON: listOptsJSON,
 	}
 	url := cli.getAPIPath("/container/list")
 	resp, err := grequests.Get(url, ro)

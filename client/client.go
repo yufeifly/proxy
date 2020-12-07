@@ -5,6 +5,7 @@ import (
 	"github.com/yufeifly/proxy/model"
 )
 
+// Client ...
 type Client struct {
 	Target model.Address
 }

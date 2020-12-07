@@ -5,6 +5,7 @@ import (
 	"github.com/yufeifly/proxy/model"
 )
 
+// StopContainer stop container
 func StopContainer(opts model.StopReqOpts) error {
 	cli := client.Client{
 		Target: opts.Address,

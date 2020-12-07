@@ -2,23 +2,25 @@ package ticket
 
 import "sync"
 
-var T *Ticket
+var ticket *Ticket
 
 const (
-	Normal    = 0
+	normal    = 0
 	Logging   = 1
 	ShutWrite = 2
 )
 
 func init() {
-	T = NewTicket()
+	ticket = NewTicket()
 }
 
+// Ticket ...
 type Ticket struct {
 	token int // 0 means , 1 means start logging, 2 means shut write
 	rw    sync.RWMutex
 }
 
+// NewTicket ...
 func NewTicket() *Ticket {
 	return &Ticket{
 		token: 0,
@@ -28,7 +30,7 @@ func NewTicket() *Ticket {
 
 // Default default ticket
 func Default() *Ticket {
-	return T
+	return ticket
 }
 
 // Get get value of ticket
@@ -50,6 +52,6 @@ func (t *Ticket) Set(v int) {
 // UnSet restore to normal mode
 func (t *Ticket) UnSet() {
 	t.rw.Lock()
-	t.token = Normal
+	t.token = normal
 	t.rw.Unlock()
 }

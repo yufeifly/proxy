@@ -6,8 +6,7 @@ import (
 	"strings"
 )
 
-/* RenameService give service a new name,
-useful in migration*/
+// RenameService give service a new name, useful in migration
 func RenameService(oldName string) string {
 	var newName string
 	dot := strings.Index(oldName, ".")

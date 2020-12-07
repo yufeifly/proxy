@@ -5,6 +5,7 @@ import (
 	"github.com/yufeifly/proxy/handlers"
 )
 
+// InitRoutes init routes for services
 func InitRoutes(r *gin.Engine) {
 	r.GET("/service/list", handlers.ListService)
 	r.POST("/service/add", handlers.ServiceAdd)

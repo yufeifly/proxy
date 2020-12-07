@@ -4,6 +4,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
+// SetupRootCommand ...
 func SetupRootCommand(rootCmd *cobra.Command) {
 
 	/*

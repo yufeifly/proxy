@@ -1,5 +1,6 @@
 package flags
 
+// CommonOptions ...
 type CommonOptions struct {
 	Debug    bool
 	Hosts    []string

@@ -16,8 +16,8 @@ func TestClient_SendLog(t *testing.T) {
 	for i := 0; i < 50; i++ {
 		s := strconv.Itoa(i)
 		tmp := []string{s, s + "#"}
-		tmpJson, _ := json.Marshal(tmp)
-		data = append(data, string(tmpJson))
+		tmpJSON, _ := json.Marshal(tmp)
+		data = append(data, string(tmpJSON))
 	}
 	logger.Log.LogQueue = data
 	logWithID := model.LogWithServiceID{

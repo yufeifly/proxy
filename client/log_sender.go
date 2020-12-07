@@ -10,14 +10,14 @@ import (
 // SendLog send log to dst
 func (cli *Client) SendLog(logWithID model.LogWithServiceID) error {
 	logrus.Debugf("data to send: %v", logWithID.Log)
-	dataJson, err := json.Marshal(logWithID)
+	dataJSON, err := json.Marshal(logWithID)
 	if err != nil {
 		logrus.Errorf("client.SendLog Marshal failed, err :%v", err)
 		return err
 	}
 
 	ro := &grequests.RequestOptions{
-		JSON: dataJson,
+		JSON: dataJSON,
 	}
 
 	//url := "http://127.0.0.1:6789/logger"

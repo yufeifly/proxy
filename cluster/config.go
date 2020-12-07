@@ -9,7 +9,7 @@ import (
 	"path/filepath"
 )
 
-var DefaultCluster model.Cluster
+var defaultCluster model.Cluster
 
 func init() {
 	err := LoadClusterConfig()
@@ -18,6 +18,7 @@ func init() {
 	}
 }
 
+// LoadClusterConfig ...
 func LoadClusterConfig() error {
 	// fixme using GetWd function is not elegant
 	dir, err := os.Getwd()
@@ -33,7 +34,7 @@ func LoadClusterConfig() error {
 	}
 	defer jsonFile.Close()
 	byteValue, _ := ioutil.ReadAll(jsonFile)
-	err = json.Unmarshal(byteValue, &DefaultCluster)
+	err = json.Unmarshal(byteValue, &defaultCluster)
 	if err != nil {
 		logrus.Errorf("cluster.LoadClusterConfig Unmarshal failed, err: %v", err)
 		return err
@@ -42,6 +43,7 @@ func LoadClusterConfig() error {
 	return nil
 }
 
+// Cluster return default cluster
 func Cluster() *model.Cluster {
-	return &DefaultCluster
+	return &defaultCluster
 }

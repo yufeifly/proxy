@@ -7,6 +7,7 @@ import (
 	"github.com/yufeifly/proxy/model"
 )
 
+// Service ...
 type Service struct {
 	ID             string // service id
 	ProxyServiceID string
@@ -53,19 +54,19 @@ func PseudoRegister() {
 	DefaultRegister("service2", opts2)
 }
 
-// Register register a service to DefaultScheduler
+// DefaultRegister register a service to DefaultScheduler
 func DefaultRegister(ProxyService string, opts model.ServiceOpts) {
 	Default().AddService(ProxyService, NewService(opts))
 }
 
+// AddMigTarget ...
 func (s *Service) AddMigTarget(addr model.Address) {
 	s.MigTarget.IP = addr.IP
 	s.MigTarget.Port = addr.Port
 }
 
-/* DataLog log data to logger of the service.
-if data size exceeds the logger capacity, send log to dst node */
-func (s *Service) LogDataInJson(data string) error {
+// LogDataInJSON log data to logger of the service. if data size exceeds the logger capacity, send log to dst node
+func (s *Service) LogDataInJSON(data string) error {
 	s.logger.Lock()
 	defer s.logger.Unlock()
 	s.logger.Count++
@@ -82,7 +83,7 @@ func (s *Service) LogDataInJson(data string) error {
 		}
 		err := cli.SendLog(logWithID)
 		if err != nil {
-			logrus.Errorf("scheduler.LogDataInJson SendLog failed, err: %v", err)
+			logrus.Errorf("scheduler.LogDataInJSON SendLog failed, err: %v", err)
 			return err
 		}
 		s.logger.TotalSend++
@@ -92,12 +93,13 @@ func (s *Service) LogDataInJson(data string) error {
 	return nil
 }
 
-// LockAndGetSentConsumed return sent and consumed
+// Service.LockAndGetSentConsumed return sent and consumed
 func (s *Service) LockAndGetSentConsumed() (int, int) {
 	s.logger.Lock()
 	return s.logger.TotalSend, s.logger.TotalConsumed
 }
 
+// UnlockLogger ...
 func (s *Service) UnlockLogger() {
 	s.logger.Unlock()
 }
@@ -126,7 +128,7 @@ func (s *Service) SendLastLog() error {
 	return nil
 }
 
-// ConsumedAdder
+// ConsumedAdder ...
 func (s *Service) ConsumedAdder() {
 	s.logger.Lock()
 	s.logger.TotalConsumed++

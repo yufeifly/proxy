@@ -16,6 +16,7 @@ type MigOpts struct {
 	Dst           string
 }
 
+// AccessRedis ...
 func AccessRedis(wg *sync.WaitGroup) {
 	for i := 0; i < 500; i++ {
 		data := make(map[string]string, 3)
@@ -38,6 +39,7 @@ func AccessRedis(wg *sync.WaitGroup) {
 	wg.Done()
 }
 
+// TriggerMigration ...
 func TriggerMigration(opts MigOpts) {
 	data := make(map[string]string, 5)
 	data["Service"] = opts.Service

@@ -40,6 +40,7 @@ func (s *Scheduler) GetService(serviceID string) (*Service, error) {
 	return service, nil
 }
 
+// DeleteService ...
 func (s *Scheduler) DeleteService(serviceID string) {
 	s.Map.Delete(serviceID)
 }

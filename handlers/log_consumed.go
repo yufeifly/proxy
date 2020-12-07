@@ -8,8 +8,7 @@ import (
 	"net/http"
 )
 
-// LogConsumeAdder
-// todo the logic should be reconsidered
+// LogConsumedAdder todo the logic should be reconsidered
 func LogConsumedAdder(c *gin.Context) {
 	logrus.Info("destination node has consumed a log")
 	proxyServiceID := c.PostForm("ProxyServiceID")

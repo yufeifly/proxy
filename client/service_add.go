@@ -6,6 +6,7 @@ import (
 	"github.com/yufeifly/proxy/model"
 )
 
+// AddService ...
 func (cli *Client) AddService(service model.ServiceOpts) error {
 	data := make(map[string]string, 3)
 	data["ServiceID"] = service.ID

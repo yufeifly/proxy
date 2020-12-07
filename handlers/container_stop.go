@@ -8,7 +8,7 @@ import (
 	"github.com/yufeifly/proxy/utils"
 )
 
-// stop a container
+// Stop stop a container
 func Stop(c *gin.Context) {
 	ContainerID := c.PostForm("ContainerID")
 	Timeout := c.PostForm("Timeout")

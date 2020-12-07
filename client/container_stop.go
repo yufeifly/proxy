@@ -6,6 +6,7 @@ import (
 	"github.com/yufeifly/proxy/model"
 )
 
+// StopContainer ...
 func (cli *Client) StopContainer(opts model.StopReqOpts) error {
 	data := make(map[string]string, 2)
 	data["ContainerID"] = opts.ContainerID

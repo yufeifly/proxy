@@ -7,6 +7,7 @@ import (
 	"github.com/yufeifly/proxy/container"
 	"github.com/yufeifly/proxy/model"
 	"github.com/yufeifly/proxy/utils"
+	"net/http"
 )
 
 // Start ContainerStart handler
@@ -36,5 +37,5 @@ func Start(c *gin.Context) {
 		utils.ReportErr(c, err)
 		logrus.Panic(err)
 	}
-	c.JSON(200, gin.H{"result": "success"})
+	c.JSON(http.StatusOK, gin.H{"result": "success"})
 }

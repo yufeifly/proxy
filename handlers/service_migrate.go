@@ -9,6 +9,7 @@ import (
 	"net/http"
 )
 
+// MigrateService ...
 func MigrateService(c *gin.Context) {
 	ProxyService := c.PostForm("Service") // of proxy
 	CheckpointID := c.PostForm("CheckpointID")

@@ -8,7 +8,7 @@ import (
 	"strings"
 )
 
-// 127.0.0.1:6789 -> ip , port, it will add default port if port does not exist
+// ParseAddress 127.0.0.1:6789 -> ip , port, it will add default port if port does not exist
 func ParseAddress(raw string) (model.Address, error) {
 	if raw == "" {
 		return model.Address{IP: "127.0.0.1", Port: config.DefaultMigratorListeningPort}, nil

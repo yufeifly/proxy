@@ -13,7 +13,7 @@ import (
 	"strconv"
 )
 
-// List handler for redirecting request of listing container(s)
+// ListContainer handler for redirecting request of listing container(s)
 func ListContainer(c *gin.Context) {
 	header := "container.List"
 	// get list options

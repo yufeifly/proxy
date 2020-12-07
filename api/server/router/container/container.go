@@ -5,6 +5,7 @@ import (
 	"github.com/yufeifly/proxy/handlers"
 )
 
+// InitRoutes init routes for container's apis
 func InitRoutes(r *gin.Engine) {
 	//r.POST("/container/run", handlers)
 	// start a container

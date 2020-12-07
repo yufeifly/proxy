@@ -7,6 +7,7 @@ import (
 	"github.com/yufeifly/proxy/model"
 )
 
+// SendMigrate ...
 func (cli *Client) SendMigrate(opts model.MigrateReqOpts) error {
 	mOpts := model.MigrateOpts{
 		Address:       opts.Dst,
@@ -16,13 +17,13 @@ func (cli *Client) SendMigrate(opts model.MigrateReqOpts) error {
 		CheckpointDir: opts.CheckpointDir,
 	}
 
-	mOptsJson, err := json.Marshal(mOpts)
+	mOptsJSON, err := json.Marshal(mOpts)
 	if err != nil {
 		return err
 	}
 
 	ro := &grequests.RequestOptions{
-		JSON: mOptsJson,
+		JSON: mOptsJSON,
 	}
 
 	//example url := "http://127.0.0.1:6789/container/migrate"

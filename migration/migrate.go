@@ -1,4 +1,5 @@
 /*
+Package migration
 Q: how to tell the dst consumer goroutine to stop?
 A: via function service.SendLastLog()
 */
@@ -15,7 +16,7 @@ import (
 	"time"
 )
 
-// TryMigrate migrate redis service
+// TryMigrateWithLogging migrate redis service
 func TryMigrateWithLogging(reqOpts model.MigrateReqOpts) error {
 	// select an appropriate dst node
 	if reqOpts.Dst.IP == "" || reqOpts.Dst.Port == "" {

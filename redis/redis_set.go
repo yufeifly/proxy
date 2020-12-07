@@ -53,10 +53,10 @@ func Set(ProxyService string, key, val string) error {
 func logRecord(service *scheduler.Service, key, val string) error {
 	logrus.Warn("logging operation")
 	kv := []string{key, val}
-	kvJson, err := json.Marshal(kv)
+	kvJSON, err := json.Marshal(kv)
 	if err != nil {
 		return err
 	}
-	err = service.LogDataInJson(string(kvJson))
+	err = service.LogDataInJSON(string(kvJSON))
 	return err
 }

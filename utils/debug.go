@@ -5,6 +5,7 @@ import (
 	"os"
 )
 
+// EnableDebug ...
 func EnableDebug() {
 	os.Setenv("DEBUG", "1")
 	logrus.SetLevel(logrus.DebugLevel)
