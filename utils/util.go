@@ -2,10 +2,9 @@ package utils
 
 import (
 	"github.com/gin-gonic/gin"
-	"net/http"
 )
 
 // ReportErr report err to request sender side
-func ReportErr(c *gin.Context, err error) {
-	c.JSON(http.StatusOK, gin.H{"result": err})
+func ReportErr(c *gin.Context, httpCode int, err error) {
+	c.JSON(httpCode, gin.H{"result": err})
 }

@@ -7,8 +7,9 @@ package migration
 
 import (
 	"github.com/sirupsen/logrus"
+	"github.com/yufeifly/proxy/api/types"
+	"github.com/yufeifly/proxy/api/types/svc"
 	"github.com/yufeifly/proxy/client"
-	"github.com/yufeifly/proxy/model"
 	"github.com/yufeifly/proxy/nodeSelector"
 	"github.com/yufeifly/proxy/scheduler"
 	"github.com/yufeifly/proxy/ticket"
@@ -16,8 +17,17 @@ import (
 	"time"
 )
 
+type MigrateReqOpts struct {
+	Src           types.Address // migration src
+	Dst           types.Address // migration destination
+	ServiceID     string        // of worker
+	ProxyService  string
+	CheckpointID  string
+	CheckpointDir string
+}
+
 // TryMigrateWithLogging migrate redis service
-func TryMigrateWithLogging(reqOpts model.MigrateReqOpts) error {
+func TryMigrateWithLogging(reqOpts MigrateReqOpts) error {
 	// select an appropriate dst node
 	if reqOpts.Dst.IP == "" || reqOpts.Dst.Port == "" {
 		node := nodeSelector.BestTarget()
@@ -32,7 +42,7 @@ func TryMigrateWithLogging(reqOpts model.MigrateReqOpts) error {
 	}
 	logrus.Debugf("migration.TryMigrateWithLogging service: %v", service)
 
-	addr := model.Address{
+	addr := types.Address{
 		IP:   reqOpts.Dst.IP,
 		Port: reqOpts.Dst.Port,
 	}
@@ -51,7 +61,14 @@ func TryMigrateWithLogging(reqOpts model.MigrateReqOpts) error {
 		cli := client.Client{
 			Target: reqOpts.Src,
 		}
-		err := cli.SendMigrate(reqOpts)
+		mOpts := types.MigrateOpts{
+			Address:       reqOpts.Dst,
+			ServiceID:     reqOpts.ServiceID,
+			ProxyService:  reqOpts.ProxyService,
+			CheckpointID:  reqOpts.CheckpointID,
+			CheckpointDir: reqOpts.CheckpointDir,
+		}
+		err := cli.SendMigrate(mOpts)
 		if err != nil {
 			logrus.Panicf("cli.SendMigrate failed, err: %v", err)
 		}
@@ -110,10 +127,10 @@ FOR:
 		if sent == consumed {
 			service.UnlockLogger()
 			logrus.Debug("switching, requests redirect to dst node")
-			opts := model.ServiceOpts{
+			opts := svc.ServiceOpts{
 				ID:             utils.RenameService(reqOpts.ServiceID),
 				ProxyServiceID: reqOpts.ProxyService,
-				NodeAddr: model.Address{
+				NodeAddr: types.Address{
 					IP:   reqOpts.Dst.IP,
 					Port: reqOpts.Dst.Port,
 				},
@@ -134,7 +151,7 @@ FOR:
 }
 
 // TryMigrate migrate regular containers
-func TryMigrate(reqOpts model.MigrateReqOpts) error {
+func TryMigrate(reqOpts MigrateReqOpts) error {
 	// select an appropriate dst node
 	if reqOpts.Dst.IP == "" || reqOpts.Dst.Port == "" {
 		node := nodeSelector.BestTarget()
@@ -146,7 +163,14 @@ func TryMigrate(reqOpts model.MigrateReqOpts) error {
 	cli := client.Client{
 		Target: reqOpts.Src,
 	}
-	err := cli.SendMigrate(reqOpts)
+	mOpts := types.MigrateOpts{
+		Address:       reqOpts.Dst,
+		ServiceID:     reqOpts.ServiceID,
+		ProxyService:  reqOpts.ProxyService,
+		CheckpointID:  reqOpts.CheckpointID,
+		CheckpointDir: reqOpts.CheckpointDir,
+	}
+	err := cli.SendMigrate(mOpts)
 	if err != nil {
 		logrus.Panicf("cli.SendMigrate failed, err: %v", err)
 	}

@@ -7,7 +7,6 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/sirupsen/logrus"
 	"github.com/yufeifly/proxy/migration"
-	"github.com/yufeifly/proxy/model"
 	"github.com/yufeifly/proxy/utils"
 	"net/http"
 )
@@ -23,16 +22,16 @@ func MigrateContainer(c *gin.Context) {
 
 	src, err := utils.ParseAddress(SrcAddr)
 	if err != nil {
-		utils.ReportErr(c, err)
+		utils.ReportErr(c, http.StatusBadRequest, err)
 		logrus.Panic(err)
 	}
 	dst, err := utils.ParseAddress(DstAddr)
 	if err != nil {
-		utils.ReportErr(c, err)
+		utils.ReportErr(c, http.StatusBadRequest, err)
 		logrus.Panic(err)
 	}
 
-	opts := model.MigrateReqOpts{
+	opts := migration.MigrateReqOpts{
 		Src:           src,
 		Dst:           dst,
 		ProxyService:  ProxyService,
@@ -40,9 +39,9 @@ func MigrateContainer(c *gin.Context) {
 		CheckpointDir: CheckpointDir,
 	}
 
-	err = migration.TryMigrateWithLogging(opts)
+	err = migration.TryMigrate(opts)
 	if err != nil {
-		utils.ReportErr(c, err)
+		utils.ReportErr(c, http.StatusInternalServerError, err)
 		logrus.Panic(err)
 	}
 	logrus.Warn("migration.TryMigrateWithLogging finished")

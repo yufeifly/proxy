@@ -1,16 +1,26 @@
 package container
 
 import (
+	dockertypes "github.com/docker/docker/api/types"
+	"github.com/yufeifly/proxy/api/types"
 	"github.com/yufeifly/proxy/client"
-	"github.com/yufeifly/proxy/model"
 )
 
+type StartReqOpts struct {
+	types.Address
+	types.StartOpts
+}
+
 // StartContainer start a container with opts
-func StartContainer(opts model.StartReqOpts) error {
+func StartContainer(opts StartReqOpts) error {
 	cli := client.Client{
 		Target: opts.Address,
 	}
-	err := cli.ContainerStart(opts)
+	sOpts := types.StartOpts{
+		CStartOpts:  dockertypes.ContainerStartOptions{},
+		ContainerID: "",
+	}
+	err := cli.ContainerStart(sOpts)
 	if err != nil {
 		return err
 	}

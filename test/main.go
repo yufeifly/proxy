@@ -18,7 +18,7 @@ type MigOpts struct {
 
 // AccessRedis ...
 func AccessRedis(wg *sync.WaitGroup) {
-	for i := 0; i < 500; i++ {
+	for i := 0; i < 300; i++ {
 		data := make(map[string]string, 3)
 		data["key"] = "name" + strconv.Itoa(i)
 		data["value"] = "value" + strconv.Itoa(i)

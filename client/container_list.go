@@ -2,14 +2,14 @@ package client
 
 import (
 	"encoding/json"
-	"github.com/docker/docker/api/types"
+	dockertypes "github.com/docker/docker/api/types"
 	"github.com/levigross/grequests"
 	"github.com/sirupsen/logrus"
-	"github.com/yufeifly/proxy/model"
+	"github.com/yufeifly/proxy/api/types"
 )
 
 // ContainerList send request to target node to get the containers's info
-func (cli *Client) ContainerList(opts model.ListReqOpts) ([]types.Container, error) {
+func (cli *Client) ContainerList(opts types.ListOpts) ([]dockertypes.Container, error) {
 	listOptsJSON, err := json.Marshal(opts.ContainerListOptions)
 	if err != nil {
 		logrus.Errorf("client.ContainerList Marshal failed, err : %v", err)
@@ -25,7 +25,7 @@ func (cli *Client) ContainerList(opts model.ListReqOpts) ([]types.Container, err
 		return nil, err
 	}
 
-	var containers []types.Container
+	var containers []dockertypes.Container
 	err = json.NewDecoder(resp.RawResponse.Body).Decode(&containers)
 	ensureReaderClosed(resp)
 

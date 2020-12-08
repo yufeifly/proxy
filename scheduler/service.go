@@ -2,6 +2,8 @@ package scheduler
 
 import (
 	"github.com/sirupsen/logrus"
+	"github.com/yufeifly/proxy/api/types"
+	"github.com/yufeifly/proxy/api/types/svc"
 	"github.com/yufeifly/proxy/client"
 	"github.com/yufeifly/proxy/config"
 	"github.com/yufeifly/proxy/model"
@@ -11,8 +13,8 @@ import (
 type Service struct {
 	ID             string // service id
 	ProxyServiceID string
-	Node           model.Address // the node that service exists
-	MigTarget      model.Address // node that may replace the origin node, useful in migration
+	Node           types.Address // the node that service exists
+	MigTarget      types.Address // node that may replace the origin node, useful in migration
 	logger         *model.Logger
 }
 
@@ -21,32 +23,32 @@ func init() {
 }
 
 // NewService new a storage service, keep it in map
-func NewService(opts model.ServiceOpts) *Service {
+func NewService(opts svc.ServiceOpts) *Service {
 	return &Service{
 		ID:             opts.ID,
 		ProxyServiceID: opts.ProxyServiceID,
 		Node:           opts.NodeAddr,
-		MigTarget:      model.Address{},
+		MigTarget:      types.Address{},
 		logger:         model.NewLogger(opts.ProxyServiceID),
 	}
 }
 
 // PseudoRegister register services
 func PseudoRegister() {
-	opts1 := model.ServiceOpts{
+	opts1 := svc.ServiceOpts{
 		ID:             "service1.1",
 		ProxyServiceID: "service1",
-		NodeAddr: model.Address{
+		NodeAddr: types.Address{
 			IP:   "192.168.227.144", // localhost
 			Port: config.DefaultMigratorListeningPort,
 		},
 	}
 	DefaultRegister("service1", opts1)
 
-	opts2 := model.ServiceOpts{
+	opts2 := svc.ServiceOpts{
 		ID:             "service2.1",
 		ProxyServiceID: "service2",
-		NodeAddr: model.Address{
+		NodeAddr: types.Address{
 			IP:   "192.168.227.144", // localhost
 			Port: config.DefaultMigratorListeningPort,
 		},
@@ -55,12 +57,12 @@ func PseudoRegister() {
 }
 
 // DefaultRegister register a service to DefaultScheduler
-func DefaultRegister(ProxyService string, opts model.ServiceOpts) {
+func DefaultRegister(ProxyService string, opts svc.ServiceOpts) {
 	Default().AddService(ProxyService, NewService(opts))
 }
 
 // AddMigTarget ...
-func (s *Service) AddMigTarget(addr model.Address) {
+func (s *Service) AddMigTarget(addr types.Address) {
 	s.MigTarget.IP = addr.IP
 	s.MigTarget.Port = addr.Port
 }

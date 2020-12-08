@@ -2,6 +2,7 @@ package nodeSelector
 
 import (
 	"github.com/sirupsen/logrus"
+	"github.com/yufeifly/proxy/api/types"
 	"github.com/yufeifly/proxy/cluster"
 	"github.com/yufeifly/proxy/config"
 	"github.com/yufeifly/proxy/model"
@@ -11,7 +12,7 @@ import (
 func BestTarget() model.Node {
 	logrus.Infof("cluster proxy: %v", cluster.Cluster().GetProxy())
 	return model.Node{
-		Address: model.Address{
+		Address: types.Address{
 			IP:   "192.168.227.147",
 			Port: config.DefaultMigratorListeningPort,
 		},

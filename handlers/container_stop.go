@@ -3,9 +3,10 @@ package handlers
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/sirupsen/logrus"
+	"github.com/yufeifly/proxy/api/types"
 	"github.com/yufeifly/proxy/container"
-	"github.com/yufeifly/proxy/model"
 	"github.com/yufeifly/proxy/utils"
+	"net/http"
 )
 
 // Stop stop a container
@@ -16,9 +17,9 @@ func Stop(c *gin.Context) {
 
 	targetAddress, err := utils.ParseAddress(address)
 
-	stopReqOpts := model.StopReqOpts{
+	stopReqOpts := container.StopReqOpts{
 		Address: targetAddress,
-		StopOpts: model.StopOpts{
+		StopOpts: types.StopOpts{
 			ContainerID: ContainerID,
 			Timeout:     Timeout,
 		},
@@ -26,7 +27,7 @@ func Stop(c *gin.Context) {
 
 	err = container.StopContainer(stopReqOpts)
 	if err != nil {
-		utils.ReportErr(c, err)
+		utils.ReportErr(c, http.StatusInternalServerError, err)
 		panic(err)
 	}
 
@@ -34,7 +35,5 @@ func Stop(c *gin.Context) {
 		"ContainerID": ContainerID,
 	}).Info("the container has been stopped")
 
-	c.JSON(200, gin.H{
-		"result": "success",
-	})
+	c.JSON(http.StatusOK, gin.H{"result": "success"})
 }

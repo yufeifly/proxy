@@ -2,12 +2,12 @@ package client
 
 import (
 	"fmt"
-	"github.com/yufeifly/proxy/model"
+	"github.com/yufeifly/proxy/api/types"
 )
 
 // Client ...
 type Client struct {
-	Target model.Address
+	Target types.Address
 }
 
 // getAPIPath path means webapi path, for example: /redis/set

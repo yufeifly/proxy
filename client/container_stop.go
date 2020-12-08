@@ -3,11 +3,11 @@ package client
 import (
 	"github.com/levigross/grequests"
 	"github.com/sirupsen/logrus"
-	"github.com/yufeifly/proxy/model"
+	"github.com/yufeifly/proxy/api/types"
 )
 
 // StopContainer ...
-func (cli *Client) StopContainer(opts model.StopReqOpts) error {
+func (cli *Client) StopContainer(opts types.StopOpts) error {
 	data := make(map[string]string, 2)
 	data["ContainerID"] = opts.ContainerID
 	data["Timeout"] = opts.Timeout

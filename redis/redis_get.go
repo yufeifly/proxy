@@ -1,8 +1,8 @@
 package redis
 
 import (
+	"github.com/yufeifly/proxy/api/types"
 	"github.com/yufeifly/proxy/client"
-	"github.com/yufeifly/proxy/model"
 	"github.com/yufeifly/proxy/scheduler"
 )
 
@@ -14,7 +14,7 @@ func Get(ProxyService string, key string) (string, error) {
 		return "", err
 	}
 	// send get request
-	getOpts := model.RedisGetOpts{
+	getOpts := types.RedisGetOpts{
 		Key:       key,
 		ServiceID: service.ID,
 		Node:      service.Node,

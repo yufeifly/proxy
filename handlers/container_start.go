@@ -1,11 +1,11 @@
 package handlers
 
 import (
-	"github.com/docker/docker/api/types"
+	dockertypes "github.com/docker/docker/api/types"
 	"github.com/gin-gonic/gin"
 	"github.com/sirupsen/logrus"
+	"github.com/yufeifly/proxy/api/types"
 	"github.com/yufeifly/proxy/container"
-	"github.com/yufeifly/proxy/model"
 	"github.com/yufeifly/proxy/utils"
 	"net/http"
 )
@@ -17,8 +17,8 @@ func Start(c *gin.Context) {
 	checkpointDir := c.PostForm("CheckpointDir")
 	address := c.PostForm("Address")
 
-	startOpts := model.StartOpts{
-		CStartOpts: types.ContainerStartOptions{
+	startOpts := types.StartOpts{
+		CStartOpts: dockertypes.ContainerStartOptions{
 			CheckpointID:  checkpointID,
 			CheckpointDir: checkpointDir,
 		},
@@ -27,14 +27,14 @@ func Start(c *gin.Context) {
 
 	targetAddress, err := utils.ParseAddress(address)
 
-	startReqOpts := model.StartReqOpts{
+	startReqOpts := container.StartReqOpts{
 		Address:   targetAddress,
 		StartOpts: startOpts,
 	}
 
 	err = container.StartContainer(startReqOpts)
 	if err != nil {
-		utils.ReportErr(c, err)
+		utils.ReportErr(c, http.StatusInternalServerError, err)
 		logrus.Panic(err)
 	}
 	c.JSON(http.StatusOK, gin.H{"result": "success"})

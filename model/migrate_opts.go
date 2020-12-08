@@ -1,16 +1,18 @@
 package model
 
+import "github.com/yufeifly/proxy/api/types"
+
 type MigrateReqOpts struct {
-	Src           Address // migration src
-	Dst           Address // migration destination
-	ServiceID     string  // of worker
+	Src           types.Address // migration src
+	Dst           types.Address // migration destination
+	ServiceID     string        // of worker
 	ProxyService  string
 	CheckpointID  string
 	CheckpointDir string
 }
 
 type MigrateOpts struct {
-	Address
+	types.Address
 	ServiceID     string
 	ProxyService  string
 	CheckpointID  string

@@ -2,17 +2,17 @@ package migration
 
 import (
 	"fmt"
-	"github.com/yufeifly/proxy/model"
+	"github.com/yufeifly/proxy/api/types"
 	"testing"
 )
 
 func TestTryMigrateWithLogging(t *testing.T) {
-	reqOpts := model.MigrateReqOpts{
-		Src: model.Address{
+	reqOpts := MigrateReqOpts{
+		Src: types.Address{
 			IP:   "127.0.0.1",
 			Port: "6789",
 		},
-		Dst: model.Address{
+		Dst: types.Address{
 			IP:   "127.0.0.1",
 			Port: "6789",
 		},

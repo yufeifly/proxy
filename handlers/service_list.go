@@ -10,8 +10,8 @@ import (
 // ListService list all services
 func ListService(c *gin.Context) {
 	services := scheduler.Default().ListService()
-	for _, ser := range services {
-		logrus.Infof("services: %v", ser)
+	for _, service := range services {
+		logrus.Debugf("services: %v", service)
 	}
 	c.JSON(http.StatusOK, services)
 }

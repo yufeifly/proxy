@@ -3,11 +3,11 @@ package client
 import (
 	"github.com/levigross/grequests"
 	"github.com/sirupsen/logrus"
-	"github.com/yufeifly/proxy/model"
+	"github.com/yufeifly/proxy/api/types/svc"
 )
 
 // AddService ...
-func (cli *Client) AddService(service model.ServiceOpts) error {
+func (cli *Client) AddService(service svc.ServiceOpts) error {
 	data := make(map[string]string, 3)
 	data["ServiceID"] = service.ID
 	data["ProxyServiceID"] = service.ProxyServiceID

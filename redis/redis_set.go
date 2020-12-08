@@ -3,9 +3,9 @@ package redis
 import (
 	"encoding/json"
 	"github.com/sirupsen/logrus"
+	"github.com/yufeifly/proxy/api/types"
 	"github.com/yufeifly/proxy/client"
 	"github.com/yufeifly/proxy/cusErr"
-	"github.com/yufeifly/proxy/model"
 	"github.com/yufeifly/proxy/scheduler"
 	"github.com/yufeifly/proxy/ticket"
 )
@@ -33,7 +33,7 @@ func Set(ProxyService string, key, val string) error {
 		}
 	}
 	// send set request
-	opts := model.RedisSetOpts{
+	opts := types.RedisSetOpts{
 		Key:       key,
 		Value:     val,
 		ServiceID: service.ID,

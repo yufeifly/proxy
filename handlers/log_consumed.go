@@ -14,7 +14,7 @@ func LogConsumedAdder(c *gin.Context) {
 	proxyServiceID := c.PostForm("ProxyServiceID")
 	proxyService, err := scheduler.Default().GetService(proxyServiceID)
 	if err != nil {
-		utils.ReportErr(c, err)
+		utils.ReportErr(c, http.StatusInternalServerError, err)
 		logrus.Panic(err)
 	}
 	proxyService.ConsumedAdder()

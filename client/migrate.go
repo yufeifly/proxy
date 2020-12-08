@@ -4,13 +4,14 @@ import (
 	"encoding/json"
 	"github.com/levigross/grequests"
 	"github.com/sirupsen/logrus"
+	"github.com/yufeifly/proxy/api/types"
 	"github.com/yufeifly/proxy/model"
 )
 
 // SendMigrate ...
-func (cli *Client) SendMigrate(opts model.MigrateReqOpts) error {
+func (cli *Client) SendMigrate(opts types.MigrateOpts) error {
 	mOpts := model.MigrateOpts{
-		Address:       opts.Dst,
+		Address:       opts.Address,
 		ServiceID:     opts.ServiceID,
 		ProxyService:  opts.ProxyService,
 		CheckpointID:  opts.CheckpointID,

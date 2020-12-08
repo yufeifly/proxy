@@ -7,7 +7,6 @@ import (
 	"github.com/sirupsen/logrus"
 	"github.com/yufeifly/proxy/api/server/httputils"
 	"github.com/yufeifly/proxy/container"
-	"github.com/yufeifly/proxy/model"
 	"github.com/yufeifly/proxy/utils"
 	"net/http"
 	"strconv"
@@ -40,14 +39,14 @@ func ListContainer(c *gin.Context) {
 	// get target address
 	targetAddr, err := utils.ParseAddress(c.Query("Address"))
 
-	listReqOpts := model.ListReqOpts{
+	listReqOpts := container.ListReqOpts{
 		Address:              targetAddr,
 		ContainerListOptions: listOpts,
 	}
 
 	containers, err := container.ListContainers(listReqOpts)
 	if err != nil {
-		utils.ReportErr(c, err)
+		utils.ReportErr(c, http.StatusInternalServerError, err)
 		logrus.Panic(err)
 	}
 

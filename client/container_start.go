@@ -3,11 +3,11 @@ package client
 import (
 	"github.com/levigross/grequests"
 	"github.com/sirupsen/logrus"
-	"github.com/yufeifly/proxy/model"
+	"github.com/yufeifly/proxy/api/types"
 )
 
 // ContainerStart send start request
-func (cli *Client) ContainerStart(opts model.StartReqOpts) error {
+func (cli *Client) ContainerStart(opts types.StartOpts) error {
 	data := make(map[string]string, 3)
 	data["ContainerID"] = opts.ContainerID
 	data["CheckpointID"] = opts.CStartOpts.CheckpointID

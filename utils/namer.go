@@ -20,7 +20,7 @@ func adder(tail string) string {
 	return strconv.Itoa(num)
 }
 
-// NameServiceByProxyService give service a name by proxy service
+// NameServiceByProxyService give service a name by proxyID
 func NameServiceByProxyService(proxyID string) string {
 	return fmt.Sprintf("%s.1", proxyID)
 }

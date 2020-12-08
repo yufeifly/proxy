@@ -3,6 +3,7 @@ package client
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/yufeifly/proxy/api/types"
 	"github.com/yufeifly/proxy/model"
 	"strconv"
 	"testing"
@@ -25,7 +26,7 @@ func TestClient_SendLog(t *testing.T) {
 		ProxyServiceID: proxyService,
 	}
 	cli := Client{
-		Target: model.Address{
+		Target: types.Address{
 			IP:   "127.0.0.1",
 			Port: "6789",
 		},
