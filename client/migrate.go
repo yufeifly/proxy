@@ -5,12 +5,11 @@ import (
 	"github.com/levigross/grequests"
 	"github.com/sirupsen/logrus"
 	"github.com/yufeifly/proxy/api/types"
-	"github.com/yufeifly/proxy/model"
 )
 
 // SendMigrate ...
 func (cli *Client) SendMigrate(options types.MigrateOpts) error {
-	mOpts := model.MigrateOpts{
+	mOpts := types.MigrateOpts{
 		Address:       options.Address,
 		ServiceID:     options.ServiceID,
 		ProxyService:  options.ProxyService,

@@ -3,13 +3,12 @@ package cluster
 import (
 	"encoding/json"
 	"github.com/sirupsen/logrus"
-	"github.com/yufeifly/proxy/model"
 	"io/ioutil"
 	"os"
 	"path/filepath"
 )
 
-var defaultCluster model.Cluster
+var defaultCluster Cluster
 
 func init() {
 	err := LoadClusterConfig()
@@ -44,6 +43,6 @@ func LoadClusterConfig() error {
 }
 
 // Cluster return default cluster
-func Cluster() *model.Cluster {
+func DefaultCluster() *Cluster {
 	return &defaultCluster
 }

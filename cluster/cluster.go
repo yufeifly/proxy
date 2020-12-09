@@ -1,4 +1,4 @@
-package model
+package cluster
 
 import "github.com/yufeifly/proxy/api/types"
 
