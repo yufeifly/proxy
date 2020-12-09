@@ -4,11 +4,11 @@ import (
 	"encoding/json"
 	"github.com/levigross/grequests"
 	"github.com/sirupsen/logrus"
-	"github.com/yufeifly/proxy/model"
+	"github.com/yufeifly/proxy/api/logger"
 )
 
 // SendLog send log to dst
-func (cli *Client) SendLog(logWithID model.LogWithServiceID) error {
+func (cli *Client) SendLog(logWithID logger.LogWithServiceID) error {
 	logrus.Debugf("data to send: %v", logWithID.Log)
 	dataJSON, err := json.Marshal(logWithID)
 	if err != nil {

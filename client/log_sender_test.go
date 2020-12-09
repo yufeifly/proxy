@@ -3,16 +3,16 @@ package client
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/yufeifly/proxy/api/logger"
 	"github.com/yufeifly/proxy/api/types"
-	"github.com/yufeifly/proxy/model"
 	"strconv"
 	"testing"
 )
 
 func TestClient_SendLog(t *testing.T) {
 	proxyService := "service1"
-	logger := model.NewLogger(proxyService)
-	logger.Log.Last = true
+	dataLogger := logger.NewLogger(proxyService)
+	dataLogger.Log.Last = true
 	var data []string
 	for i := 0; i < 50; i++ {
 		s := strconv.Itoa(i)
@@ -20,17 +20,15 @@ func TestClient_SendLog(t *testing.T) {
 		tmpJSON, _ := json.Marshal(tmp)
 		data = append(data, string(tmpJSON))
 	}
-	logger.Log.LogQueue = data
-	logWithID := model.LogWithServiceID{
-		Log:            logger.Log,
+	dataLogger.Log.LogQueue = data
+	logWithID := logger.LogWithServiceID{
+		Log:            dataLogger.Log,
 		ProxyServiceID: proxyService,
 	}
-	cli := Client{
-		Target: types.Address{
-			IP:   "127.0.0.1",
-			Port: "6789",
-		},
-	}
+	cli := NewClient(types.Address{
+		IP:   "127.0.0.1",
+		Port: "6789",
+	})
 	err := cli.SendLog(logWithID)
 	if err != nil {
 		t.Errorf("cli.SendLog failed, err : %v", err)

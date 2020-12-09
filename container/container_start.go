@@ -13,9 +13,7 @@ type StartReqOpts struct {
 
 // StartContainer start a container with opts
 func StartContainer(opts StartReqOpts) error {
-	cli := client.Client{
-		Target: opts.Address,
-	}
+	cli := client.NewClient(opts.Address)
 	sOpts := types.StartOpts{
 		CStartOpts:  dockertypes.ContainerStartOptions{},
 		ContainerID: "",

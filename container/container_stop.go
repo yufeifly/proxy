@@ -12,9 +12,7 @@ type StopReqOpts struct {
 
 // StopContainer stop container
 func StopContainer(opts StopReqOpts) error {
-	cli := client.Client{
-		Target: opts.Address,
-	}
+	cli := client.NewClient(opts.Address)
 	stopOpts := types.StopOpts{
 		ContainerID: opts.ContainerID,
 		Timeout:     opts.Timeout,

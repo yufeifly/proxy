@@ -2,11 +2,11 @@ package scheduler
 
 import (
 	"github.com/sirupsen/logrus"
+	"github.com/yufeifly/proxy/api/logger"
 	"github.com/yufeifly/proxy/api/types"
 	"github.com/yufeifly/proxy/api/types/svc"
 	"github.com/yufeifly/proxy/client"
 	"github.com/yufeifly/proxy/config"
-	"github.com/yufeifly/proxy/model"
 )
 
 // Service ...
@@ -15,7 +15,7 @@ type Service struct {
 	ProxyServiceID string
 	Node           types.Address // the node that service exists
 	MigTarget      types.Address // node that may replace the origin node, useful in migration
-	logger         *model.Logger
+	logger         *logger.Logger
 }
 
 func init() {
@@ -29,7 +29,7 @@ func NewService(opts svc.ServiceOpts) *Service {
 		ProxyServiceID: opts.ProxyServiceID,
 		Node:           opts.NodeAddr,
 		MigTarget:      types.Address{},
-		logger:         model.NewLogger(opts.ProxyServiceID),
+		logger:         logger.NewLogger(opts.ProxyServiceID),
 	}
 }
 
@@ -76,10 +76,8 @@ func (s *Service) LogDataInJSON(data string) error {
 
 	if s.logger.Count == s.logger.Capacity {
 		// todo send to dst by goroutine
-		cli := client.Client{
-			Target: s.MigTarget,
-		}
-		logWithID := model.LogWithServiceID{
+		cli := client.NewClient(s.MigTarget)
+		logWithID := logger.LogWithServiceID{
 			Log:            s.logger.Log,
 			ProxyServiceID: s.ProxyServiceID,
 		}
@@ -109,15 +107,12 @@ func (s *Service) UnlockLogger() {
 // SendLastLog send the last log to dst
 func (s *Service) SendLastLog() error {
 	logrus.Info("send the last log")
-	cli := client.Client{
-		Target: s.MigTarget,
-	}
-
+	cli := client.NewClient(s.MigTarget)
 	s.logger.Lock()
 	defer s.logger.Unlock()
 
 	s.logger.SetLastFlag()
-	logWithID := model.LogWithServiceID{
+	logWithID := logger.LogWithServiceID{
 		Log:            s.logger.Log,
 		ProxyServiceID: s.ProxyServiceID,
 	}

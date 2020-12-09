@@ -14,9 +14,7 @@ type ListReqOpts struct {
 
 // ListContainers list containers of a worker node
 func ListContainers(listOpts ListReqOpts) ([]dockertypes.Container, error) {
-	cli := client.Client{
-		Target: listOpts.Address,
-	}
+	cli := client.NewClient(listOpts.Address)
 	lOpts := types.ListOpts{
 		ContainerListOptions: listOpts.ContainerListOptions,
 	}

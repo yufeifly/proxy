@@ -9,13 +9,13 @@ import (
 )
 
 // SendMigrate ...
-func (cli *Client) SendMigrate(opts types.MigrateOpts) error {
+func (cli *Client) SendMigrate(options types.MigrateOpts) error {
 	mOpts := model.MigrateOpts{
-		Address:       opts.Address,
-		ServiceID:     opts.ServiceID,
-		ProxyService:  opts.ProxyService,
-		CheckpointID:  opts.CheckpointID,
-		CheckpointDir: opts.CheckpointDir,
+		Address:       options.Address,
+		ServiceID:     options.ServiceID,
+		ProxyService:  options.ProxyService,
+		CheckpointID:  options.CheckpointID,
+		CheckpointDir: options.CheckpointDir,
 	}
 
 	mOptsJSON, err := json.Marshal(mOpts)

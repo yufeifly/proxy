@@ -39,9 +39,7 @@ func Set(ProxyService string, key, val string) error {
 		ServiceID: service.ID,
 		Node:      service.Node,
 	}
-	cli := client.Client{
-		Target: opts.Node,
-	}
+	cli := client.NewClient(opts.Node)
 	err = cli.RedisSet(opts)
 	if err != nil {
 		return err

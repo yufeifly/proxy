@@ -7,10 +7,10 @@ import (
 )
 
 // RedisGet send get request to worker node
-func (cli *Client) RedisGet(opts types.RedisGetOpts) (string, error) {
+func (cli *Client) RedisGet(options types.RedisGetOpts) (string, error) {
 	params := make(map[string]string, 2)
-	params["key"] = opts.Key
-	params["service"] = opts.ServiceID
+	params["key"] = options.Key
+	params["service"] = options.ServiceID
 	ro := &grequests.RequestOptions{
 		Params: params,
 	}
@@ -26,11 +26,11 @@ func (cli *Client) RedisGet(opts types.RedisGetOpts) (string, error) {
 }
 
 // RedisSet send set request to worker node
-func (cli *Client) RedisSet(opts types.RedisSetOpts) error {
+func (cli *Client) RedisSet(options types.RedisSetOpts) error {
 	data := make(map[string]string, 3)
-	data["key"] = opts.Key
-	data["value"] = opts.Value
-	data["service"] = opts.ServiceID
+	data["key"] = options.Key
+	data["value"] = options.Value
+	data["service"] = options.ServiceID
 
 	ro := &grequests.RequestOptions{
 		Data: data,

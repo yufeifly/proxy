@@ -7,10 +7,16 @@ import (
 
 // Client ...
 type Client struct {
-	Target types.Address
+	addr types.Address
+}
+
+func NewClient(address types.Address) APIClient {
+	return &Client{
+		addr: address,
+	}
 }
 
 // getAPIPath path means webapi path, for example: /redis/set
 func (cli *Client) getAPIPath(path string) string {
-	return fmt.Sprintf("http://%s:%s%s", cli.Target.IP, cli.Target.Port, path)
+	return fmt.Sprintf("http://%s:%s%s", cli.addr.IP, cli.addr.Port, path)
 }

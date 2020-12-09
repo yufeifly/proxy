@@ -7,10 +7,10 @@ import (
 )
 
 // StopContainer ...
-func (cli *Client) StopContainer(opts types.StopOpts) error {
+func (cli *Client) StopContainer(options types.StopOpts) error {
 	data := make(map[string]string, 2)
-	data["ContainerID"] = opts.ContainerID
-	data["Timeout"] = opts.Timeout
+	data["ContainerID"] = options.ContainerID
+	data["Timeout"] = options.Timeout
 
 	ro := &grequests.RequestOptions{
 		Data: data,

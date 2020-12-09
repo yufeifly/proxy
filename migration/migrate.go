@@ -58,9 +58,7 @@ func TryMigrateWithLogging(reqOpts MigrateReqOpts) error {
 	started := make(chan bool) // todo change to struct{}{}
 	// send migrate request to src node
 	go func() {
-		cli := client.Client{
-			Target: reqOpts.Src,
-		}
+		cli := client.NewClient(reqOpts.Src)
 		mOpts := types.MigrateOpts{
 			Address:       reqOpts.Dst,
 			ServiceID:     reqOpts.ServiceID,
@@ -160,9 +158,7 @@ func TryMigrate(reqOpts MigrateReqOpts) error {
 
 	// send migrate request to src node
 
-	cli := client.Client{
-		Target: reqOpts.Src,
-	}
+	cli := client.NewClient(reqOpts.Src)
 	mOpts := types.MigrateOpts{
 		Address:       reqOpts.Dst,
 		ServiceID:     reqOpts.ServiceID,

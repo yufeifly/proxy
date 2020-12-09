@@ -1,4 +1,4 @@
-package model
+package logger
 
 import (
 	"github.com/yufeifly/proxy/config"

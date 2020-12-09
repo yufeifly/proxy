@@ -7,11 +7,11 @@ import (
 )
 
 // ContainerStart send start request
-func (cli *Client) ContainerStart(opts types.StartOpts) error {
+func (cli *Client) ContainerStart(options types.StartOpts) error {
 	data := make(map[string]string, 3)
-	data["ContainerID"] = opts.ContainerID
-	data["CheckpointID"] = opts.CStartOpts.CheckpointID
-	data["CheckpointDir"] = opts.CStartOpts.CheckpointDir
+	data["ContainerID"] = options.ContainerID
+	data["CheckpointID"] = options.CStartOpts.CheckpointID
+	data["CheckpointDir"] = options.CStartOpts.CheckpointDir
 
 	ro := &grequests.RequestOptions{
 		Data: data,

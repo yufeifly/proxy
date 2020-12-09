@@ -9,8 +9,8 @@ import (
 )
 
 // ContainerList send request to target node to get the containers's info
-func (cli *Client) ContainerList(opts types.ListOpts) ([]dockertypes.Container, error) {
-	listOptsJSON, err := json.Marshal(opts.ContainerListOptions)
+func (cli *Client) ContainerList(options types.ListOpts) ([]dockertypes.Container, error) {
+	listOptsJSON, err := json.Marshal(options.ContainerListOptions)
 	if err != nil {
 		logrus.Errorf("client.ContainerList Marshal failed, err : %v", err)
 		return nil, err
