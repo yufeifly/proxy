@@ -6,6 +6,7 @@ import (
 	"github.com/yufeifly/proxy/client"
 )
 
+// StartReqOpts ...
 type StartReqOpts struct {
 	types.Address
 	types.StartOpts

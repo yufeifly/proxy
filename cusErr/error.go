@@ -3,9 +3,14 @@ package cusErr
 import "errors"
 
 var (
-	ErrNotFound            = errors.New("no such record")
-	ErrServiceNotFound     = errors.New("service not found")
+	// ErrNotFound ...
+	ErrNotFound = errors.New("no such record")
+	// ErrServiceNotFound ...
+	ErrServiceNotFound = errors.New("service not found")
+	// ErrServiceNotAvailable ...
 	ErrServiceNotAvailable = errors.New("service not available")
-	ErrBadAddress          = errors.New("bad address")
-	ErrBadParams           = errors.New("bad params")
+	// ErrBadAddress ...
+	ErrBadAddress = errors.New("bad address")
+	// ErrBadParams ...
+	ErrBadParams = errors.New("bad params")
 )

@@ -5,34 +5,42 @@ import (
 	"sync"
 )
 
-var DefaultScheduler *Scheduler
+var defaultScheduler *scheduler
 
-func init() {
-	DefaultScheduler = NewScheduler()
+// Scheduler ...
+type Scheduler interface {
+	AddService(id string, service *Service) // id means proxyServiceID
+	GetService(id string) (*Service, error)
+	ListService() (services []*Service)
 }
 
-type Scheduler struct {
+type scheduler struct {
 	Map sync.Map
 }
 
-// NewScheduler new a scheduler
-func NewScheduler() *Scheduler {
-	return &Scheduler{}
+// InitScheduler init scheduler
+func InitScheduler() {
+	defaultScheduler = NewScheduler()
 }
 
-// Default default scheduler
-func Default() *Scheduler {
-	return DefaultScheduler
+// NewScheduler new a scheduler
+func NewScheduler() *scheduler {
+	return &scheduler{}
+}
+
+// Default get default scheduler
+func Default() Scheduler {
+	return defaultScheduler
 }
 
 // AddService add a service to scheduler
-func (s *Scheduler) AddService(sID string, service *Service) {
-	s.Map.Store(sID, service)
+func (s *scheduler) AddService(id string, service *Service) {
+	s.Map.Store(id, service)
 }
 
 // GetService get service from scheduler
-func (s *Scheduler) GetService(serviceID string) (*Service, error) {
-	serviceP, ok := s.Map.Load(serviceID)
+func (s *scheduler) GetService(id string) (*Service, error) {
+	serviceP, ok := s.Map.Load(id)
 	if !ok {
 		return nil, cusErr.ErrServiceNotFound
 	}
@@ -41,12 +49,12 @@ func (s *Scheduler) GetService(serviceID string) (*Service, error) {
 }
 
 // DeleteService ...
-func (s *Scheduler) DeleteService(serviceID string) {
-	s.Map.Delete(serviceID)
+func (s *scheduler) DeleteService(id string) {
+	s.Map.Delete(id)
 }
 
 // ListService list all services of a scheduler
-func (s *Scheduler) ListService() (services []*Service) {
+func (s *scheduler) ListService() (services []*Service) {
 	s.Map.Range(func(key, value interface{}) bool {
 		ser, _ := value.(*Service)
 		services = append(services, ser)

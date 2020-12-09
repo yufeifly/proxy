@@ -3,8 +3,8 @@ package client
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/yufeifly/proxy/api/logger"
 	"github.com/yufeifly/proxy/api/types"
+	"github.com/yufeifly/proxy/api/types/logger"
 	"strconv"
 	"testing"
 )

@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"github.com/levigross/grequests"
 	"github.com/sirupsen/logrus"
-	"github.com/yufeifly/proxy/api/logger"
+	"github.com/yufeifly/proxy/api/types/logger"
 )
 
 // SendLog send log to dst

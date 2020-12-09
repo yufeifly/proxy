@@ -2,7 +2,7 @@ package ticket
 
 import "sync"
 
-var ticket *Ticket
+var defaultTicket *ticket
 
 const (
 	normal    = 0
@@ -10,31 +10,38 @@ const (
 	ShutWrite = 2
 )
 
-func init() {
-	ticket = NewTicket()
+// Ticket ...
+type Ticket interface {
+	Get() int
+	Set(v int)
+	UnSet()
 }
 
-// Ticket ...
-type Ticket struct {
+type ticket struct {
 	token int // 0 means , 1 means start logging, 2 means shut write
 	rw    sync.RWMutex
 }
 
+// InitTicket ...
+func InitTicket() {
+	defaultTicket = NewTicket()
+}
+
 // NewTicket ...
-func NewTicket() *Ticket {
-	return &Ticket{
+func NewTicket() *ticket {
+	return &ticket{
 		token: 0,
 		rw:    sync.RWMutex{},
 	}
 }
 
 // Default default ticket
-func Default() *Ticket {
-	return ticket
+func Default() Ticket {
+	return defaultTicket
 }
 
 // Get get value of ticket
-func (t *Ticket) Get() int {
+func (t *ticket) Get() int {
 	var ret int
 	t.rw.RLock()
 	ret = t.token
@@ -43,14 +50,14 @@ func (t *Ticket) Get() int {
 }
 
 // Set set value of ticket
-func (t *Ticket) Set(v int) {
+func (t *ticket) Set(v int) {
 	t.rw.Lock()
 	t.token = v
 	t.rw.Unlock()
 }
 
 // UnSet restore to normal mode
-func (t *Ticket) UnSet() {
+func (t *ticket) UnSet() {
 	t.rw.Lock()
 	t.token = normal
 	t.rw.Unlock()

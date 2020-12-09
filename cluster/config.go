@@ -10,13 +10,6 @@ import (
 
 var defaultCluster Cluster
 
-func init() {
-	err := LoadClusterConfig()
-	if err != nil {
-		logrus.Panicf("cluster.init LoadClusterConfig failed, err: %v", err)
-	}
-}
-
 // LoadClusterConfig ...
 func LoadClusterConfig() error {
 	// fixme using GetWd function is not elegant
@@ -38,11 +31,11 @@ func LoadClusterConfig() error {
 		logrus.Errorf("cluster.LoadClusterConfig Unmarshal failed, err: %v", err)
 		return err
 	}
-	//fmt.Printf("the cluster: %v", Cluster)
+	logrus.Infof("the cluster: %v", defaultCluster)
 	return nil
 }
 
-// Cluster return default cluster
+// DefaultCluster return default cluster
 func DefaultCluster() *Cluster {
 	return &defaultCluster
 }

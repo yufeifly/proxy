@@ -1,6 +1,7 @@
 package client
 
 import (
+	"fmt"
 	"github.com/levigross/grequests"
 	"io"
 	"io/ioutil"
@@ -12,4 +13,9 @@ func ensureReaderClosed(response *grequests.Response) {
 		io.CopyN(ioutil.Discard, body, 512)
 		response.RawResponse.Body.Close()
 	}
+}
+
+// getAPIPath path means webapi path, for example: /redis/set
+func (cli *Client) getAPIPath(path string) string {
+	return fmt.Sprintf("http://%s:%s%s", cli.addr.IP, cli.addr.Port, path)
 }

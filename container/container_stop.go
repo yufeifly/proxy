@@ -5,6 +5,7 @@ import (
 	"github.com/yufeifly/proxy/client"
 )
 
+// StopReqOpts ...
 type StopReqOpts struct {
 	types.Address
 	types.StopOpts

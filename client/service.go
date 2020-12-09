@@ -6,7 +6,7 @@ import (
 	"github.com/yufeifly/proxy/api/types/svc"
 )
 
-// AddService ...
+// AddService add a redis service
 func (cli *Client) AddService(service svc.ServiceOpts) error {
 	data := make(map[string]string, 3)
 	data["ServiceID"] = service.ID

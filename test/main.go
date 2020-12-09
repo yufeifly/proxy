@@ -8,6 +8,7 @@ import (
 	"time"
 )
 
+// MigOpts ...
 type MigOpts struct {
 	Service       string
 	CheckpointID  string

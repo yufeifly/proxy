@@ -2,8 +2,8 @@ package scheduler
 
 import (
 	"github.com/sirupsen/logrus"
-	"github.com/yufeifly/proxy/api/logger"
 	"github.com/yufeifly/proxy/api/types"
+	"github.com/yufeifly/proxy/api/types/logger"
 	"github.com/yufeifly/proxy/api/types/svc"
 	"github.com/yufeifly/proxy/client"
 	"github.com/yufeifly/proxy/config"
@@ -56,7 +56,7 @@ func PseudoRegister() {
 	DefaultRegister("service2", opts2)
 }
 
-// DefaultRegister register a service to DefaultScheduler
+// DefaultRegister register a service to defaultScheduler
 func DefaultRegister(ProxyService string, opts svc.ServiceOpts) {
 	Default().AddService(ProxyService, NewService(opts))
 }
@@ -86,17 +86,17 @@ func (s *Service) LogDataInJSON(data string) error {
 			logrus.Errorf("scheduler.LogDataInJSON SendLog failed, err: %v", err)
 			return err
 		}
-		s.logger.TotalSend++
+		s.logger.Sent++
 		s.logger.ClearQueue()
 		s.logger.Count = 0
 	}
 	return nil
 }
 
-// Service.LockAndGetSentConsumed return sent and consumed
+// LockAndGetSentConsumed return sent and consumed
 func (s *Service) LockAndGetSentConsumed() (int, int) {
 	s.logger.Lock()
-	return s.logger.TotalSend, s.logger.TotalConsumed
+	return s.logger.Sent, s.logger.Consumed
 }
 
 // UnlockLogger ...
@@ -128,6 +128,6 @@ func (s *Service) SendLastLog() error {
 // ConsumedAdder ...
 func (s *Service) ConsumedAdder() {
 	s.logger.Lock()
-	s.logger.TotalConsumed++
+	s.logger.Consumed++
 	s.logger.Unlock()
 }

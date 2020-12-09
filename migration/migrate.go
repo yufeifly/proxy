@@ -17,6 +17,7 @@ import (
 	"time"
 )
 
+// MigrateReqOpts ...
 type MigrateReqOpts struct {
 	Src           types.Address // migration src
 	Dst           types.Address // migration destination
@@ -171,7 +172,6 @@ func TryMigrate(reqOpts MigrateReqOpts) error {
 		logrus.Panicf("cli.SendMigrate failed, err: %v", err)
 	}
 
-	// downtime end, unset global lock
 	logrus.Debug("ticket unset")
 	ticket.Default().UnSet()
 
