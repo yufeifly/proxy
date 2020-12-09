@@ -8,6 +8,5 @@ import (
 // InitRoutes init routes for redis operation
 func InitRoutes(r *gin.Engine) {
 	r.GET("/redis/get", handlers.Get)
-	// redis set func
 	r.POST("/redis/set", handlers.Set)
 }

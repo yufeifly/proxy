@@ -1,6 +1,7 @@
 package main
 
 import (
+	"github.com/gin-gonic/gin"
 	"github.com/sirupsen/logrus"
 	"github.com/yufeifly/proxy/api/server/router"
 	"github.com/yufeifly/proxy/cluster"
@@ -16,10 +17,16 @@ func main() {
 	}
 	// init default scheduler
 	scheduler.InitScheduler()
+	// register services
+	scheduler.PseudoRegister()
 	// init ticket
 	ticket.InitTicket()
-	//
-	r := router.InitRoutes()
+	// get gin engine and init API routes
+	//if !utils.IsDebugEnabled(){
+	//	gin.SetMode(gin.ReleaseMode)
+	//}
+	r := gin.Default()
+	router.InitRoutes(r)
 	if err := r.Run(":6788"); err != nil {
 		logrus.Errorf("gin.run err: %v", err)
 	}
