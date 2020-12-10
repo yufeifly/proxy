@@ -3,5 +3,8 @@ package cluster
 import "testing"
 
 func TestLoadClusterConfig(t *testing.T) {
-	LoadClusterConfig()
+	err := LoadClusterConfig()
+	if err != nil {
+		t.Errorf("TestLoadClusterConfig err: %v", err)
+	}
 }

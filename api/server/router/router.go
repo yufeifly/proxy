@@ -9,12 +9,9 @@ import (
 )
 
 // InitRoutes init all the routers
-func InitRoutes() *gin.Engine {
-	//gin.SetMode(gin.ReleaseMode)
-	r := gin.Default()
+func InitRoutes(r *gin.Engine) {
 	redis.InitRoutes(r)
 	container.InitRoutes(r)
 	logger.InitRoutes(r)
 	service.InitRoutes(r)
-	return r
 }

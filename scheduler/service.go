@@ -18,10 +18,6 @@ type Service struct {
 	logger         *logger.Logger
 }
 
-func init() {
-	PseudoRegister()
-}
-
 // NewService new a storage service, keep it in map
 func NewService(opts svc.ServiceOpts) *Service {
 	return &Service{
