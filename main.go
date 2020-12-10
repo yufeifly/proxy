@@ -6,7 +6,14 @@ import (
 	"github.com/yufeifly/proxy/cluster"
 	"github.com/yufeifly/proxy/scheduler"
 	"github.com/yufeifly/proxy/ticket"
+	"github.com/yufeifly/proxy/utils"
 )
+
+func init() {
+	if utils.IsDebugEnabled() {
+		utils.EnableDebug()
+	}
+}
 
 func main() {
 	// loading cluster
