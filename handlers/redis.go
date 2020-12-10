@@ -5,6 +5,7 @@ import (
 	"github.com/sirupsen/logrus"
 	"github.com/yufeifly/proxy/cusErr"
 	"github.com/yufeifly/proxy/redis"
+	"github.com/yufeifly/proxy/utils"
 	"net/http"
 )
 
@@ -18,17 +19,16 @@ func Get(c *gin.Context) {
 	// verify params
 	if ProxyService == "" || key == "" {
 		logrus.Errorf("%s, err: %v", header, cusErr.ErrBadParams)
-		c.JSON(http.StatusBadRequest, gin.H{"failed: ": cusErr.ErrBadParams.Error()})
+		utils.ReportErr(c, http.StatusBadRequest, cusErr.ErrBadParams)
 		return
 	}
 
 	val, err := redis.Get(ProxyService, key)
 	if err != nil {
 		logrus.Errorf("%s, err: %v", header, err)
-		c.JSON(http.StatusOK, gin.H{"failed: ": err.Error()})
+		utils.ReportErr(c, http.StatusInternalServerError, err)
 		return
 	}
-
 	c.JSON(http.StatusOK, gin.H{"value: ": val})
 }
 
