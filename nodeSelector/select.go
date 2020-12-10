@@ -7,12 +7,13 @@ import (
 	"github.com/yufeifly/proxy/config"
 )
 
-// BestTarget select the best target for migration
+// BestTarget todo select the best target for migration
 func BestTarget() cluster.Node {
-	logrus.Infof("cluster proxy: %v", cluster.DefaultCluster().GetProxy())
+	proxyIP := cluster.DefaultCluster().GetProxy().IP
+	logrus.Infof("cluster proxy: %v", proxyIP)
 	return cluster.Node{
 		Address: types.Address{
-			IP:   "192.168.227.147",
+			IP:   proxyIP,
 			Port: config.DefaultMigratorListeningPort,
 		},
 	}

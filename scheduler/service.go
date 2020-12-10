@@ -6,6 +6,7 @@ import (
 	"github.com/yufeifly/proxy/api/types/logger"
 	"github.com/yufeifly/proxy/api/types/svc"
 	"github.com/yufeifly/proxy/client"
+	"github.com/yufeifly/proxy/cluster"
 	"github.com/yufeifly/proxy/config"
 )
 
@@ -31,11 +32,12 @@ func NewService(opts svc.ServiceOpts) *Service {
 
 // PseudoRegister register services
 func PseudoRegister() {
+	proxyIP := cluster.DefaultCluster().GetProxy().IP
 	opts1 := svc.ServiceOpts{
 		ID:             "service1.1",
 		ProxyServiceID: "service1",
 		NodeAddr: types.Address{
-			IP:   "192.168.227.144", // localhost
+			IP:   proxyIP, // localhost
 			Port: config.DefaultMigratorListeningPort,
 		},
 	}
@@ -45,7 +47,7 @@ func PseudoRegister() {
 		ID:             "service2.1",
 		ProxyServiceID: "service2",
 		NodeAddr: types.Address{
-			IP:   "192.168.227.144", // localhost
+			IP:   proxyIP, // localhost
 			Port: config.DefaultMigratorListeningPort,
 		},
 	}

@@ -53,9 +53,6 @@ func TryMigrateWithLogging(reqOpts MigrateReqOpts) error {
 
 	ticket.Default().Set(ticket.Logging)
 
-	// for test, test if log are consumed successfully
-	// redis.Set("service1", "happy", "birthday")
-
 	started := make(chan bool) // todo change to struct{}{}
 	// send migrate request to src node
 	go func() {
@@ -125,7 +122,7 @@ FOR:
 		sent, consumed := service.LockAndGetSentConsumed()
 		if sent == consumed {
 			service.UnlockLogger()
-			logrus.Debug("switching, requests redirect to dst node")
+			logrus.Warn("switching, requests redirect to dst node")
 			opts := svc.ServiceOpts{
 				ID:             utils.RenameService(reqOpts.ServiceID),
 				ProxyServiceID: reqOpts.ProxyService,
@@ -157,8 +154,17 @@ func TryMigrate(reqOpts MigrateReqOpts) error {
 		reqOpts.Dst = node.Address
 	}
 
-	// send migrate request to src node
+	// add service.MigrationTarget first, start logging second!
+	service, err := scheduler.Default().GetService(reqOpts.ProxyService)
+	if err != nil {
+		logrus.Errorf("migration.TryMigrateWithLogging GetService failed, err: %v", err)
+		return err
+	}
+	logrus.Debugf("migration.TryMigrateWithLogging service: %v", service)
 
+	reqOpts.ServiceID = service.ID // of worker
+
+	// send migrate request to src node
 	cli := client.NewClient(reqOpts.Src)
 	mOpts := types.MigrateOpts{
 		Address:       reqOpts.Dst,
@@ -167,9 +173,8 @@ func TryMigrate(reqOpts MigrateReqOpts) error {
 		CheckpointID:  reqOpts.CheckpointID,
 		CheckpointDir: reqOpts.CheckpointDir,
 	}
-	err := cli.SendMigrate(mOpts)
-	if err != nil {
-		logrus.Panicf("cli.SendMigrate failed, err: %v", err)
+	if err := cli.SendMigrate(mOpts); err != nil {
+		logrus.Panicf("migration.TryMigrate, cli.SendMigrate failed, err: %v", err)
 	}
 
 	logrus.Debug("ticket unset")

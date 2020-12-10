@@ -39,12 +39,11 @@ func MigrateContainer(c *gin.Context) {
 		CheckpointDir: CheckpointDir,
 	}
 
-	err = migration.TryMigrate(opts)
-	if err != nil {
+	if err = migration.TryMigrate(opts); err != nil {
 		utils.ReportErr(c, http.StatusInternalServerError, err)
 		logrus.Panic(err)
 	}
-	logrus.Warn("migration.TryMigrateWithLogging finished")
+	logrus.Warn("handlers.MigrateContainer, migration.TryMigrateWithLogging finished")
 	//
 	c.JSON(http.StatusOK, gin.H{"result": "success"})
 }
