@@ -51,7 +51,7 @@ func TryMigrateWithLogging(reqOpts MigrateReqOpts) error {
 
 	reqOpts.ServiceID = service.ID // of worker
 
-	ticket.Default().Set(ticket.Logging)
+	service.Ticket().Set(ticket.Logging)
 
 	startedCh := make(chan bool) // todo change to struct{}{}
 	// send migrate request to src node
@@ -98,7 +98,7 @@ FOR:
 			}
 			if sent-consumed < 1 {
 				logrus.Warn("downtime start")
-				ticket.Default().Set(ticket.ShutWrite)
+				service.Ticket().Set(ticket.ShutWrite)
 				service.UnlockLogger()
 				break FOR
 			}
@@ -139,7 +139,7 @@ FOR:
 
 	// downtime end, unset global lock
 	logrus.Debug("ticket unset")
-	ticket.Default().UnSet()
+	service.Ticket().UnSet()
 
 	return nil
 }
@@ -176,7 +176,7 @@ func TryMigrate(reqOpts MigrateReqOpts) error {
 	}
 
 	logrus.Debug("ticket unset")
-	ticket.Default().UnSet()
+	service.Ticket().UnSet()
 
 	return nil
 }

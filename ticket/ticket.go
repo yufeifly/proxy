@@ -2,8 +2,6 @@ package ticket
 
 import "sync"
 
-var defaultTicket *ticket
-
 const (
 	normal    = 0
 	Logging   = 1
@@ -22,22 +20,12 @@ type ticket struct {
 	rw    sync.RWMutex
 }
 
-// InitTicket ...
-func InitTicket() {
-	defaultTicket = NewTicket()
-}
-
-// NewTicket ...
-func NewTicket() *ticket {
+// NewTicket return ticket interface
+func NewTicket() Ticket {
 	return &ticket{
-		token: 0,
+		token: normal,
 		rw:    sync.RWMutex{},
 	}
-}
-
-// Default default ticket
-func Default() Ticket {
-	return defaultTicket
 }
 
 // Get get value of ticket

@@ -12,17 +12,16 @@ import (
 
 // Set set kv pair to redis service
 func Set(proxyService string, key, val string) error {
-
-	token := ticket.Default().Get()
-	// if ticket = ShutWrite
-	if token == ticket.ShutWrite {
-		return cuserr.ErrServiceNotAvailable
-	}
 	// get service
 	service, err := scheduler.Default().GetService(proxyService)
 	if err != nil {
 		logrus.Errorf("GetService failed, err: %v", err)
 		return err
+	}
+	token := service.Ticket().Get()
+	// if ticket = ShutWrite
+	if token == ticket.ShutWrite {
+		return cuserr.ErrServiceNotAvailable
 	}
 	// if ticket = Logging, log it
 	if token == ticket.Logging {
@@ -49,7 +48,7 @@ func Set(proxyService string, key, val string) error {
 
 // logRecord logs a record
 func logRecord(service *scheduler.Service, key, val string) error {
-	logrus.Warn("logging operation")
+	logrus.Warn("redis.logRecord logging operation")
 	kv := []string{key, val}
 	kvJSON, err := json.Marshal(kv)
 	if err != nil {

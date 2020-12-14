@@ -8,15 +8,17 @@ import (
 	"github.com/yufeifly/proxy/client"
 	"github.com/yufeifly/proxy/cluster"
 	"github.com/yufeifly/proxy/config"
+	"github.com/yufeifly/proxy/ticket"
 )
 
 // Service ...
 type Service struct {
 	ID             string // service id
 	ProxyServiceID string
-	Node           types.Address // the node that service exists
-	MigTarget      types.Address // node that may replace the origin node, useful in migration
-	logger         *logger.Logger
+	Node           types.Address  // the node that service exists
+	MigTarget      types.Address  // node that may replace the origin node, useful in migration
+	logger         *logger.Logger // log the data while migrating, useful in migration
+	ticket         ticket.Ticket  // ticket interface
 }
 
 // NewService new a storage service, keep it in map
@@ -27,6 +29,7 @@ func NewService(opts svc.ServiceOpts) *Service {
 		Node:           opts.NodeAddr,
 		MigTarget:      types.Address{},
 		logger:         logger.NewLogger(opts.ProxyServiceID),
+		ticket:         ticket.NewTicket(),
 	}
 }
 
@@ -128,4 +131,9 @@ func (s *Service) ConsumedAdder() {
 	s.logger.Lock()
 	s.logger.Consumed++
 	s.logger.Unlock()
+}
+
+// Ticket get ticket interface
+func (s *Service) Ticket() ticket.Ticket {
+	return s.ticket
 }

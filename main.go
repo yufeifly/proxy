@@ -6,7 +6,6 @@ import (
 	"github.com/yufeifly/proxy/api/server/router"
 	"github.com/yufeifly/proxy/cluster"
 	"github.com/yufeifly/proxy/scheduler"
-	"github.com/yufeifly/proxy/ticket"
 	"github.com/yufeifly/proxy/utils"
 )
 
@@ -26,8 +25,6 @@ func main() {
 	scheduler.InitScheduler()
 	// register services
 	scheduler.PseudoRegister()
-	// init ticket
-	ticket.InitTicket()
 	// get gin engine and init API routes
 	//if !utils.IsDebugEnabled(){
 	//	gin.SetMode(gin.ReleaseMode)

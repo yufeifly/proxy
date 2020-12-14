@@ -28,6 +28,6 @@ func (cli *Client) SendLog(logWithID logger.LogWithServiceID) error {
 		logrus.Errorf("client.SendLog Post failed, err: %v", err)
 		return err
 	}
-	logrus.Info(resp)
+	logrus.Infof("client.SendLog resp: %v", resp)
 	return nil
 }

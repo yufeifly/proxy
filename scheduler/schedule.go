@@ -28,7 +28,7 @@ func NewScheduler() *scheduler {
 	return &scheduler{}
 }
 
-// Default get default scheduler
+// Default get default scheduler interface
 func Default() Scheduler {
 	return defaultScheduler
 }
