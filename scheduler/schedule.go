@@ -1,7 +1,7 @@
 package scheduler
 
 import (
-	"github.com/yufeifly/proxy/cusErr"
+	"github.com/yufeifly/proxy/cuserr"
 	"sync"
 )
 
@@ -42,7 +42,7 @@ func (s *scheduler) AddService(id string, service *Service) {
 func (s *scheduler) GetService(id string) (*Service, error) {
 	serviceP, ok := s.Map.Load(id)
 	if !ok {
-		return nil, cusErr.ErrServiceNotFound
+		return nil, cuserr.ErrServiceNotFound
 	}
 	service, _ := serviceP.(*Service)
 	return service, nil

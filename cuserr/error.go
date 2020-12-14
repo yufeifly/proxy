@@ -1,4 +1,4 @@
-package cusErr
+package cuserr
 
 import "errors"
 

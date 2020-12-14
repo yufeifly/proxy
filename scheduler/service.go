@@ -37,7 +37,7 @@ func PseudoRegister() {
 		ID:             "service1.1",
 		ProxyServiceID: "service1",
 		NodeAddr: types.Address{
-			IP:   proxyIP, // localhost
+			IP:   proxyIP, // fixme localhost
 			Port: config.DefaultMigratorListeningPort,
 		},
 	}
@@ -47,7 +47,7 @@ func PseudoRegister() {
 		ID:             "service2.1",
 		ProxyServiceID: "service2",
 		NodeAddr: types.Address{
-			IP:   proxyIP, // localhost
+			IP:   proxyIP, // fixme localhost
 			Port: config.DefaultMigratorListeningPort,
 		},
 	}

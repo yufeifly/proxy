@@ -53,7 +53,7 @@ func TryMigrateWithLogging(reqOpts MigrateReqOpts) error {
 
 	ticket.Default().Set(ticket.Logging)
 
-	started := make(chan bool) // todo change to struct{}{}
+	startedCh := make(chan bool) // todo change to struct{}{}
 	// send migrate request to src node
 	go func() {
 		cli := client.NewClient(reqOpts.Src)
@@ -69,19 +69,19 @@ func TryMigrateWithLogging(reqOpts MigrateReqOpts) error {
 			logrus.Panicf("cli.SendMigrate failed, err: %v", err)
 		}
 		logrus.Debug("container dst started")
-		started <- true
+		startedCh <- true
 		logrus.Debug("container dst started, true write to chan")
 	}()
 
 	// write log files to dst
 	// when dst starts, open redis connection
 	// dst consume logs in the meantime
-	// wait until all log files consumed(no whole log file)
-	ticker := time.NewTicker(10 * time.Millisecond)
+	// wait until all log files are consumed(no whole log file)
+	ticker := time.NewTicker(1 * time.Microsecond)
 FOR:
 	for {
 		select {
-		case <-started:
+		case <-startedCh:
 			logrus.Debug("get value from chan(started)")
 			sent, _ := service.LockAndGetSentConsumed()
 			if sent == 0 {
@@ -91,9 +91,7 @@ FOR:
 			}
 			service.UnlockLogger()
 		case <-ticker.C:
-			//logrus.Info("tick")
 			sent, consumed := service.LockAndGetSentConsumed()
-			//logrus.Infof("sent: %v, consumed: %v", sent, consumed)
 			if sent == 0 {
 				service.UnlockLogger()
 				continue

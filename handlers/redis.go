@@ -3,7 +3,7 @@ package handlers
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/sirupsen/logrus"
-	"github.com/yufeifly/proxy/cusErr"
+	"github.com/yufeifly/proxy/cuserr"
 	"github.com/yufeifly/proxy/redis"
 	"github.com/yufeifly/proxy/utils"
 	"net/http"
@@ -18,8 +18,8 @@ func Get(c *gin.Context) {
 
 	// verify params
 	if ProxyService == "" || key == "" {
-		logrus.Errorf("%s, err: %v", header, cusErr.ErrBadParams)
-		utils.ReportErr(c, http.StatusBadRequest, cusErr.ErrBadParams)
+		logrus.Errorf("%s, err: %v", header, cuserr.ErrBadParams)
+		utils.ReportErr(c, http.StatusBadRequest, cuserr.ErrBadParams)
 		return
 	}
 
@@ -41,8 +41,8 @@ func Set(c *gin.Context) {
 
 	// verify params
 	if ProxyService == "" || key == "" || value == "" {
-		logrus.Errorf("handlers.Set, err: %v", cusErr.ErrBadParams)
-		c.JSON(http.StatusBadRequest, gin.H{"failed: ": cusErr.ErrBadParams.Error()})
+		logrus.Errorf("handlers.Set, err: %v", cuserr.ErrBadParams)
+		c.JSON(http.StatusBadRequest, gin.H{"failed: ": cuserr.ErrBadParams.Error()})
 		return
 	}
 	// do set

@@ -3,7 +3,7 @@ package utils
 import (
 	"github.com/yufeifly/proxy/api/types"
 	"github.com/yufeifly/proxy/config"
-	"github.com/yufeifly/proxy/cusErr"
+	"github.com/yufeifly/proxy/cuserr"
 	"regexp"
 	"strings"
 )
@@ -30,7 +30,7 @@ func ParseAddress(raw string) (types.Address, error) {
 		return types.Address{}, err
 	}
 	if !matchedIP {
-		return types.Address{}, cusErr.ErrBadAddress
+		return types.Address{}, cuserr.ErrBadAddress
 	}
 	addr.IP = ip
 	if port != "" {
@@ -39,7 +39,7 @@ func ParseAddress(raw string) (types.Address, error) {
 			return types.Address{}, err
 		}
 		if !portMatched {
-			return types.Address{}, cusErr.ErrBadAddress
+			return types.Address{}, cuserr.ErrBadAddress
 		}
 		addr.Port = port
 	}
