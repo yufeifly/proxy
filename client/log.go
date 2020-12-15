@@ -8,7 +8,7 @@ import (
 )
 
 // SendLog send log to dst
-func (cli *Client) SendLog(logWithID logger.LogWithServiceID) error {
+func (cli *Client) SendLog(logWithID logger.LogWithPSID) error {
 	logrus.Debugf("data to send: %v", logWithID.Log)
 	dataJSON, err := json.Marshal(logWithID)
 	if err != nil {

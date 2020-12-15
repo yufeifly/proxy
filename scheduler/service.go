@@ -76,9 +76,8 @@ func (s *Service) LogDataInJSON(data string) error {
 	s.logger.LogQueue = append(s.logger.LogQueue, data)
 
 	if s.logger.Count == s.logger.Capacity {
-		// todo send to dst by goroutine
 		cli := client.NewClient(s.MigTarget)
-		logWithID := logger.LogWithServiceID{
+		logWithID := logger.LogWithPSID{
 			Log:            s.logger.Log,
 			ProxyServiceID: s.ProxyServiceID,
 		}
@@ -97,12 +96,8 @@ func (s *Service) LogDataInJSON(data string) error {
 // LockAndGetSentConsumed return sent and consumed
 func (s *Service) LockAndGetSentConsumed() (int, int) {
 	s.logger.Lock()
+	defer s.logger.Unlock()
 	return s.logger.Sent, s.logger.Consumed
-}
-
-// UnlockLogger ...
-func (s *Service) UnlockLogger() {
-	s.logger.Unlock()
 }
 
 // SendLastLog send the last log to dst
@@ -113,7 +108,7 @@ func (s *Service) SendLastLog() error {
 	defer s.logger.Unlock()
 
 	s.logger.SetLastFlag()
-	logWithID := logger.LogWithServiceID{
+	logWithID := logger.LogWithPSID{
 		Log:            s.logger.Log,
 		ProxyServiceID: s.ProxyServiceID,
 	}
@@ -129,8 +124,8 @@ func (s *Service) SendLastLog() error {
 // ConsumedAdder ...
 func (s *Service) ConsumedAdder() {
 	s.logger.Lock()
+	defer s.logger.Unlock()
 	s.logger.Consumed++
-	s.logger.Unlock()
 }
 
 // Ticket get ticket interface

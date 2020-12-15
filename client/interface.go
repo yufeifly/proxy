@@ -30,7 +30,7 @@ type ServiceAPIClient interface {
 
 // LogAPIClient ...
 type LogAPIClient interface {
-	SendLog(logWithID logger.LogWithServiceID) error
+	SendLog(logWithID logger.LogWithPSID) error
 }
 
 // RedisAPIClient ...

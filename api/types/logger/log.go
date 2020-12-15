@@ -20,39 +20,39 @@ func NewLog() *Log {
 	}
 }
 
-// LogWithServiceID ...
-type LogWithServiceID struct {
-	*Log
+// LogWithPSID ...
+type LogWithPSID struct {
 	ProxyServiceID string
+	*Log
 }
 
 // NewLogWithServiceID new a log with service ID
-func NewLogWithServiceID(proxyService string) *LogWithServiceID {
-	return &LogWithServiceID{
-		Log:            NewLog(),
+func NewLogWithServiceID(proxyService string) *LogWithPSID {
+	return &LogWithPSID{
 		ProxyServiceID: proxyService,
+		Log:            NewLog(),
 	}
 }
 
 // Logger ...
 type Logger struct {
-	*LogWithServiceID
 	Count    int // current log entry count
 	Capacity int // size of a log page
 	Sent     int
 	Consumed int
 	sync.Mutex
+	*LogWithPSID
 }
 
 // NewLogger ...
 func NewLogger(proxyService string) *Logger {
 	return &Logger{
-		LogWithServiceID: NewLogWithServiceID(proxyService),
-		Count:            0,
-		Capacity:         capacity,
-		Sent:             0,
-		Consumed:         0,
-		Mutex:            sync.Mutex{},
+		Count:       0,
+		Capacity:    capacity,
+		Sent:        0,
+		Consumed:    0,
+		Mutex:       sync.Mutex{},
+		LogWithPSID: NewLogWithServiceID(proxyService),
 	}
 }
 

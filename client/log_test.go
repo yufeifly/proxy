@@ -21,7 +21,7 @@ func TestClient_SendLog(t *testing.T) {
 		data = append(data, string(tmpJSON))
 	}
 	dataLogger.Log.LogQueue = data
-	logWithID := logger.LogWithServiceID{
+	logWithID := logger.LogWithPSID{
 		Log:            dataLogger.Log,
 		ProxyServiceID: proxyService,
 	}

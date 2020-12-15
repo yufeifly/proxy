@@ -82,27 +82,22 @@ FOR:
 	for {
 		select {
 		case <-startedCh:
-			logrus.Debug("get value from chan(started)")
+			logrus.Debug("migration.TryMigrateWithLogging, get value from chan(started)")
 			sent, _ := service.LockAndGetSentConsumed()
 			if sent == 0 {
-				logrus.Debug("log sent is 0, about to sent last log")
-				service.UnlockLogger()
+				logrus.Debug("migration.TryMigrateWithLogging, log sent number is 0, about to send the last log")
 				break FOR
 			}
-			service.UnlockLogger()
 		case <-ticker.C:
 			sent, consumed := service.LockAndGetSentConsumed()
 			if sent == 0 {
-				service.UnlockLogger()
 				continue
 			}
 			if sent-consumed < 1 {
-				logrus.Warn("downtime start")
+				logrus.Warn("migration.TryMigrateWithLogging, downtime start")
 				service.Ticket().Set(ticket.ShutWrite)
-				service.UnlockLogger()
 				break FOR
 			}
-			service.UnlockLogger()
 		}
 	}
 
@@ -110,7 +105,7 @@ FOR:
 	// true flag tells dst that this is the last one, so the consumer goroutine can stop
 	err = service.SendLastLog()
 	if err != nil {
-		logrus.Errorf("migration service.SendLastLog failed, err: %v", err)
+		logrus.Errorf("migration.TryMigrateWithLogging, SendLastLog failed, err: %v", err)
 		return err
 	}
 
@@ -119,8 +114,7 @@ FOR:
 		<-ticker.C
 		sent, consumed := service.LockAndGetSentConsumed()
 		if sent == consumed {
-			service.UnlockLogger()
-			logrus.Warn("switching, requests redirect to dst node")
+			logrus.Warn("migration.TryMigrateWithLogging, switching, requests redirect to dst node")
 			opts := svc.ServiceOpts{
 				ID:             utils.RenameService(reqOpts.ServiceID),
 				ProxyServiceID: reqOpts.ProxyService,
@@ -130,15 +124,14 @@ FOR:
 				},
 			}
 			scheduler.DefaultRegister(reqOpts.ProxyService, opts)
-			logrus.Warn("downtime end")
+			logrus.Warn("migration.TryMigrateWithLogging, downtime end")
 			break
 		}
-		service.UnlockLogger()
 	}
 	ticker.Stop() // shut ticker
 
 	// downtime end, unset global lock
-	logrus.Debug("ticket unset")
+	logrus.Debug("migration.TryMigrateWithLogging, ticket unset")
 	service.Ticket().UnSet()
 
 	return nil
@@ -155,10 +148,10 @@ func TryMigrate(reqOpts MigrateReqOpts) error {
 	// add service.MigrationTarget first, start logging second!
 	service, err := scheduler.Default().GetService(reqOpts.ProxyService)
 	if err != nil {
-		logrus.Errorf("migration.TryMigrateWithLogging GetService failed, err: %v", err)
+		logrus.Errorf("migration.TryMigrate GetService failed, err: %v", err)
 		return err
 	}
-	logrus.Debugf("migration.TryMigrateWithLogging service: %v", service)
+	logrus.Debugf("migration.TryMigrate service: %v", service)
 
 	reqOpts.ServiceID = service.ID // of worker
 

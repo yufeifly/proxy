@@ -1,5 +1,5 @@
 PROJECT_NAME=$(shell basename "$(PWD)")
-GORUN=sudo go run
+GORUN=sudo -E go run
 
 help: Makefile
 	@echo "Usage:\n  make [command]"
