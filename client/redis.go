@@ -36,9 +36,27 @@ func (cli *Client) RedisSet(options types.RedisSetOpts) error {
 		Data: data,
 	}
 	url := cli.getAPIPath("/redis/set")
-	_, err := grequests.Post(url, ro)
+	resp, err := grequests.Post(url, ro)
 	if err != nil {
 		return err
 	}
+	resp.RawResponse.Body.Close()
+	return nil
+}
+
+func (cli *Client) RedisDelete(options types.RedisDeleteOpts) error {
+	data := make(map[string]string, 2)
+	data["key"] = options.Key
+	data["service"] = options.ServiceID
+
+	ro := &grequests.RequestOptions{
+		Data: data,
+	}
+	url := cli.getAPIPath("/redis/delete")
+	resp, err := grequests.Post(url, ro)
+	if err != nil {
+		return err
+	}
+	resp.RawResponse.Body.Close()
 	return nil
 }
