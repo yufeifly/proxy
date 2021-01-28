@@ -2,45 +2,60 @@ package client
 
 import (
 	"encoding/json"
+	"fmt"
 	"github.com/levigross/grequests"
+	"github.com/sirupsen/logrus"
 	"github.com/yufeifly/proxy/api/types"
+	"net/http"
+	"net/url"
 )
 
 // RedisGet send get request to worker node
 func (cli *Client) RedisGet(options types.RedisGetOpts) (string, error) {
-	params := make(map[string]string, 2)
-	params["key"] = options.Key
-	params["service"] = options.ServiceID
-	ro := &grequests.RequestOptions{
-		Params: params,
-	}
-	url := cli.getAPIPath("/redis/get")
-	resp, err := grequests.Get(url, ro)
+	logrus.Infof("target: %v", options.Node)
+	url := fmt.Sprintf("http://%s:%s%s", options.Node.IP, options.Node.Port, "/redis/get")
+	req, err := http.NewRequest(http.MethodGet, url, nil)
 	if err != nil {
+		logrus.Errorf("http.NewRequest err: %v", err)
 		return "", err
 	}
+	// add params
+	q := req.URL.Query()
+	q.Add("key", options.Key)
+	q.Add("service", options.ServiceID)
+	req.URL.RawQuery = q.Encode()
+	// do request
+	resp, err := cli.httpClient.Do(req)
+	if err != nil {
+		logrus.Errorf("cli.httpClient.Do err: %v", err)
+		return "", err
+	}
+	defer resp.Body.Close()
 	var value string
-	err = json.NewDecoder(resp.RawResponse.Body).Decode(&value)
-	ensureReaderClosed(resp)
+	err = json.NewDecoder(resp.Body).Decode(&value)
+	if err != nil {
+		logrus.Errorf("client.RedisGet Read json.Unmarshal err: %v", err)
+		return "", err
+	}
 	return value, nil
 }
 
 // RedisSet send set request to worker node
 func (cli *Client) RedisSet(options types.RedisSetOpts) error {
-	data := make(map[string]string, 3)
-	data["key"] = options.Key
-	data["value"] = options.Value
-	data["service"] = options.ServiceID
-
-	ro := &grequests.RequestOptions{
-		Data: data,
+	urlSet := fmt.Sprintf("http://%s:%s%s", options.Node.IP, options.Node.Port, "/redis/set")
+	// add params
+	q := url.Values{
+		"key":     {options.Key},
+		"value":   {options.Value},
+		"service": {options.ServiceID},
 	}
-	url := cli.getAPIPath("/redis/set")
-	resp, err := grequests.Post(url, ro)
+	// do request
+	resp, err := cli.httpClient.PostForm(urlSet, q)
 	if err != nil {
+		logrus.Errorf("cli.httpClient.Do err: %v", err)
 		return err
 	}
-	resp.RawResponse.Body.Close()
+	resp.Body.Close()
 	return nil
 }
 

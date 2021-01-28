@@ -38,7 +38,7 @@ func Set(proxyService string, key, val string) error {
 		ServiceID: service.ID,
 		Node:      service.Node,
 	}
-	cli := client.NewClient(opts.Node)
+	cli := client.DefaultClient()
 	err = cli.RedisSet(opts)
 	if err != nil {
 		return err

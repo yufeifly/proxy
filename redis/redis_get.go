@@ -19,7 +19,7 @@ func Get(ProxyService string, key string) (string, error) {
 		ServiceID: service.ID,
 		Node:      service.Node,
 	}
-	cli := client.NewClient(getOpts.Node)
+	cli := client.DefaultClient()
 	val, err := cli.RedisGet(getOpts)
 	if err != nil {
 		return "", err

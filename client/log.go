@@ -29,5 +29,6 @@ func (cli *Client) SendLog(logWithID logger.LogWithPSID) error {
 		return err
 	}
 	logrus.Infof("client.SendLog resp: %v", resp)
+	resp.RawResponse.Body.Close()
 	return nil
 }
