@@ -2,9 +2,9 @@ package cluster
 
 import "testing"
 
-func TestLoadClusterConfig(t *testing.T) {
-	err := LoadClusterConfig()
+func TestLoadConfig(t *testing.T) {
+	err := LoadConfig()
 	if err != nil {
-		t.Errorf("TestLoadClusterConfig err: %v", err)
+		t.Errorf("TestLoadConfig err: %v", err)
 	}
 }

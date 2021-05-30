@@ -35,7 +35,7 @@ func NewService(opts svc.ServiceOpts) *Service {
 
 // PseudoRegister register services
 func PseudoRegister() {
-	proxyIP := cluster.DefaultCluster().GetProxy().IP
+	proxyIP := cluster.Default().Proxy().IP
 	opts1 := svc.ServiceOpts{
 		ID:             "service1.1",
 		ProxyServiceID: "service1",

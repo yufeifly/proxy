@@ -2,35 +2,37 @@ package cluster
 
 import "github.com/yufeifly/proxy/api/types"
 
-var defaultCluster cluster
-
 // Cluster ...
 type Cluster interface {
-	GetProxy() Node
-	GetWorkers() []Node
+	// get proxy of the cluster
+	Proxy() Node
+	// get workers of the cluster
+	Workers() []Node
 }
 
 type cluster struct {
-	Master  Node   `json:"proxy"`
-	Workers []Node `json:"worker"`
+	master  Node   `json:"proxy"`
+	workers []Node `json:"worker"`
 }
+
+var defaultCluster cluster
 
 // Node ...
 type Node struct {
 	types.Address
 }
 
-// DefaultCluster return default cluster
-func DefaultCluster() Cluster {
+// Default return default cluster
+func Default() Cluster {
 	return &defaultCluster
 }
 
-// GetProxy ...
-func (c *cluster) GetProxy() Node {
-	return c.Master
+// Proxy ...
+func (c *cluster) Proxy() Node {
+	return c.master
 }
 
-// GetWorkers ...
-func (c *cluster) GetWorkers() []Node {
-	return c.Workers
+// Workers ...
+func (c *cluster) Workers() []Node {
+	return c.workers
 }

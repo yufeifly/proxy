@@ -5,8 +5,6 @@ import (
 	"sync"
 )
 
-var defaultScheduler *scheduler
-
 // Scheduler ...
 type Scheduler interface {
 	AddService(id string, service *Service) // id means proxyServiceID
@@ -18,8 +16,10 @@ type scheduler struct {
 	Map sync.Map
 }
 
-// InitScheduler init scheduler
-func InitScheduler() {
+var defaultScheduler *scheduler
+
+// Init init scheduler
+func Init() {
 	defaultScheduler = NewScheduler()
 }
 
