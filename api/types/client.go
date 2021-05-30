@@ -17,6 +17,13 @@ type RedisSetOpts struct {
 	Node      Address
 }
 
+// RedisDeleteOpts ...
+type RedisDeleteOpts struct {
+	Key       string
+	ServiceID string
+	Node      Address
+}
+
 // StartOpts ...
 type StartOpts struct {
 	CStartOpts  dockertypes.ContainerStartOptions

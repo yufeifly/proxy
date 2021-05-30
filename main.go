@@ -29,6 +29,7 @@ func main() {
 	//if !utils.IsDebugEnabled(){
 	//	gin.SetMode(gin.ReleaseMode)
 	//}
+	gin.SetMode(gin.ReleaseMode)
 	r := gin.Default()
 	router.InitRoutes(r)
 	if err := r.Run(":6788"); err != nil {

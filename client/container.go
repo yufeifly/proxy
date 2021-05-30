@@ -42,11 +42,12 @@ func (cli *Client) StopContainer(options types.StopOpts) error {
 		Data: data,
 	}
 	url := cli.getAPIPath("/container/stop")
-	_, err := grequests.Post(url, ro)
+	resp, err := grequests.Post(url, ro)
 	if err != nil {
 		logrus.Errorf("client.StopContainer post err: %v", err)
 		return err
 	}
+	resp.RawResponse.Body.Close()
 	return nil
 }
 
@@ -61,10 +62,11 @@ func (cli *Client) ContainerStart(options types.StartOpts) error {
 		Data: data,
 	}
 	url := cli.getAPIPath("/container/start")
-	_, err := grequests.Post(url, ro)
+	resp, err := grequests.Post(url, ro)
 	if err != nil {
 		logrus.Errorf("client.ContainerStart post err: %v", err)
 		return err
 	}
+	resp.RawResponse.Body.Close()
 	return nil
 }

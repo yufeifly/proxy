@@ -21,5 +21,6 @@ func (cli *Client) AddService(service svc.ServiceOpts) error {
 		return err
 	}
 	logrus.Infof("AddService resp: %v", resp.RawResponse)
+	resp.RawResponse.Body.Close()
 	return nil
 }

@@ -20,10 +20,11 @@ func (cli *Client) SendMigrate(options types.MigrateOpts) error {
 
 	//example url := "http://127.0.0.1:6789/container/migrate"
 	url := cli.getAPIPath("/container/migrate")
-	_, err = grequests.Post(url, ro)
+	resp, err := grequests.Post(url, ro)
 	logrus.Debug("client.SendMigrate finished")
 	if err != nil {
 		return err
 	}
+	resp.RawResponse.Body.Close()
 	return nil
 }

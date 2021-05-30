@@ -37,6 +37,7 @@ type LogAPIClient interface {
 type RedisAPIClient interface {
 	RedisGet(options types.RedisGetOpts) (string, error)
 	RedisSet(options types.RedisSetOpts) error
+	RedisDelete(options types.RedisDeleteOpts) error
 }
 
 // MigrationAPIClient ...

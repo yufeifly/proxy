@@ -168,6 +168,18 @@ func TryMigrate(reqOpts MigrateReqOpts) error {
 		logrus.Panicf("migration.TryMigrate, cli.SendMigrate failed, err: %v", err)
 	}
 
+	logrus.Warn("migration.TryMigrateWithLogging, switching, requests redirect to dst node")
+	opts := svc.ServiceOpts{
+		ID:             utils.RenameService(reqOpts.ServiceID),
+		ProxyServiceID: reqOpts.ProxyService,
+		NodeAddr: types.Address{
+			IP:   reqOpts.Dst.IP,
+			Port: reqOpts.Dst.Port,
+		},
+	}
+	scheduler.DefaultRegister(reqOpts.ProxyService, opts)
+	logrus.Warn("migration.TryMigrateWithLogging, downtime end")
+
 	logrus.Debug("ticket unset")
 	service.Ticket().UnSet()
 
