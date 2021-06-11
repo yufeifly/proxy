@@ -35,7 +35,7 @@ func MigrateService(c *gin.Context) {
 		CheckpointDir: CheckpointDir,
 	}
 
-	err = migration.TryMigrateWithLogging(opts)
+	err = migration.MigrateWithLogging(opts)
 	if err != nil {
 		utils.ReportErr(c, http.StatusInternalServerError, err)
 		logrus.Panic(err)

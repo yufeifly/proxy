@@ -5,14 +5,14 @@ import "github.com/yufeifly/proxy/api/types"
 // Cluster ...
 type Cluster interface {
 	// get proxy of the cluster
-	Proxy() Node
+	GetProxy() Node
 	// get workers of the cluster
-	Workers() []Node
+	GetWorkers() []Node
 }
 
 type cluster struct {
-	master  Node   `json:"proxy"`
-	workers []Node `json:"worker"`
+	Master  Node   `json:"proxy"`
+	Workers []Node `json:"worker"`
 }
 
 var defaultCluster cluster
@@ -28,11 +28,11 @@ func Default() Cluster {
 }
 
 // Proxy ...
-func (c *cluster) Proxy() Node {
-	return c.master
+func (c *cluster) GetProxy() Node {
+	return c.Master
 }
 
 // Workers ...
-func (c *cluster) Workers() []Node {
-	return c.workers
+func (c *cluster) GetWorkers() []Node {
+	return c.Workers
 }

@@ -39,7 +39,7 @@ func MigrateContainer(c *gin.Context) {
 		CheckpointDir: CheckpointDir,
 	}
 
-	if err = migration.TryMigrate(opts); err != nil {
+	if err = migration.MigrateWithLogging(opts); err != nil {
 		utils.ReportErr(c, http.StatusInternalServerError, err)
 		logrus.Panic(err)
 	}
