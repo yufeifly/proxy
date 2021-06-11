@@ -9,7 +9,7 @@ import (
 
 // BestTarget todo select the best target for migration
 func BestTarget() cluster.Node {
-	proxyIP := cluster.Default().Proxy().IP
+	proxyIP := cluster.Default().GetProxy().IP
 	logrus.Infof("cluster proxy: %v", proxyIP)
 	return cluster.Node{
 		Address: types.Address{

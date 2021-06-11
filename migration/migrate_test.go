@@ -21,7 +21,7 @@ func TestTryMigrateWithLogging(t *testing.T) {
 		CheckpointID:  "cp-redis",
 		CheckpointDir: "/tmp",
 	}
-	err := TryMigrateWithLogging(reqOpts)
+	err := MigrateWithLogging(reqOpts)
 	if err != nil {
 		t.Errorf("TryMigrateWithLogging failed, err : %v", err)
 	} else {

@@ -9,8 +9,8 @@ import (
 // AddService add a redis service
 func (cli *Client) AddService(service svc.ServiceOpts) error {
 	data := make(map[string]string, 3)
-	data["ServiceID"] = service.ID
-	data["ProxyServiceID"] = service.ProxyServiceID
+	data["ServiceID"] = service.CName
+	data["ProxyServiceID"] = service.SID
 	ro := &grequests.RequestOptions{
 		Data: data,
 	}

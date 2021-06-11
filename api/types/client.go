@@ -43,9 +43,9 @@ type ListOpts struct {
 
 // MigrateOpts ...
 type MigrateOpts struct {
-	Address
-	ServiceID     string
-	ProxyService  string
-	CheckpointID  string
-	CheckpointDir string
+	Address       `json:"target"`
+	SID           string `json:"sid"`
+	CName         string `json:"c_name"`
+	CheckpointID  string `json:"checkpoint_id"`
+	CheckpointDir string `json:"checkpoint_dir"`
 }

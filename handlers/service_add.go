@@ -12,7 +12,8 @@ import (
 
 // ServiceAdd handler of adding a redis service
 func ServiceAdd(c *gin.Context) {
-	ProxyService := c.PostForm("Service")
+	Service := c.PostForm("Service")
+	containerName := c.PostForm("ContainerName")
 	RawAddress := c.PostForm("Address") // address of worker node
 	address, err := utils.ParseAddress(RawAddress)
 	if err != nil {
@@ -20,12 +21,12 @@ func ServiceAdd(c *gin.Context) {
 		logrus.Panic(err)
 	}
 	opts := svc.ServiceOpts{
-		ID:             utils.NameServiceByProxyService(ProxyService),
-		ProxyServiceID: ProxyService,
-		NodeAddr:       address,
+		CName:    containerName,
+		SID:      Service,
+		NodeAddr: address,
 	}
 
-	scheduler.DefaultRegister(ProxyService, opts)
+	scheduler.DefaultRegister(Service, opts)
 	//
 	cli := client.NewClient(opts.NodeAddr)
 	err = cli.AddService(opts)

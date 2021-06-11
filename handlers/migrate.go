@@ -12,38 +12,39 @@ import (
 )
 
 // MigrateContainer handler for redirecting request of migrating container
-func MigrateContainer(c *gin.Context) {
+func Migrate(c *gin.Context) {
 
-	ProxyService := c.PostForm("Service") // of proxy
-	CheckpointID := c.PostForm("CheckpointID")
-	CheckpointDir := c.PostForm("CheckpointDir")
-	SrcAddr := c.PostForm("Src")
-	DstAddr := c.PostForm("Dst")
+	service := c.PostForm("Service")
+	containerName := c.PostForm("ContainerName")
+	srcAddr := c.PostForm("Source")
+	dstAddr := c.PostForm("Destination")
+	checkpointID := c.PostForm("CheckpointID")
+	checkpointDir := c.PostForm("CheckpointDir")
 
-	src, err := utils.ParseAddress(SrcAddr)
+	src, err := utils.ParseAddress(srcAddr)
 	if err != nil {
 		utils.ReportErr(c, http.StatusBadRequest, err)
 		logrus.Panic(err)
 	}
-	dst, err := utils.ParseAddress(DstAddr)
+	dst, err := utils.ParseAddress(dstAddr)
 	if err != nil {
 		utils.ReportErr(c, http.StatusBadRequest, err)
 		logrus.Panic(err)
 	}
 
 	opts := migration.MigrateReqOpts{
+		SID:           service,
+		CName:         containerName,
 		Src:           src,
 		Dst:           dst,
-		ProxyService:  ProxyService,
-		CheckpointID:  CheckpointID,
-		CheckpointDir: CheckpointDir,
+		CheckpointID:  checkpointID,
+		CheckpointDir: checkpointDir,
 	}
 
-	if err = migration.TryMigrate(opts); err != nil {
+	if err = migration.MigrateWithLogging(opts); err != nil {
 		utils.ReportErr(c, http.StatusInternalServerError, err)
 		logrus.Panic(err)
 	}
-	logrus.Warn("handlers.MigrateContainer, migration.TryMigrateWithLogging finished")
-	//
+
 	c.JSON(http.StatusOK, gin.H{"result": "success"})
 }

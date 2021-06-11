@@ -2,16 +2,20 @@ package router
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/yufeifly/proxy/api/server/router/container"
-	"github.com/yufeifly/proxy/api/server/router/logger"
-	"github.com/yufeifly/proxy/api/server/router/redis"
-	"github.com/yufeifly/proxy/api/server/router/service"
+	"github.com/yufeifly/proxy/handlers"
 )
 
 // InitRoutes init all the routers
 func InitRoutes(r *gin.Engine) {
-	redis.InitRoutes(r)
-	container.InitRoutes(r)
-	logger.InitRoutes(r)
-	service.InitRoutes(r)
+
+	r.POST("/container/start", handlers.Start)
+	r.GET("/container/list", handlers.ListContainer)
+	r.POST("/container/stop", handlers.Stop)
+
+	r.POST("/migrate", handlers.Migrate)
+
+	r.GET("/service/list", handlers.ListService)
+	r.POST("/service/add", handlers.ServiceAdd)
+
+	r.GET("/proxy/service/get", handlers.ProxyService)
 }
